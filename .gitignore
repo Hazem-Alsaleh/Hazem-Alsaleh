@@ -1,2 +1,3 @@
 # trader-skill runtime state (seen headlines, alert history, broker log, PDFs)
 trader/state/
+trader/prices.json

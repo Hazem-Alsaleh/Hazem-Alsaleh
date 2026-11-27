@@ -190,32 +190,6 @@ test("email notifications for new inquiries", async () => {
   cookie = saved;
 });
 
-test("Syrian pound exchange rate setting", async () => {
-  const base = (await call("GET", "/api/admin/settings")).data.settings;
-  assert.strictEqual(base.usdRate, 122, "seeded from config.js");
-
-  let r = await call("PUT", "/api/admin/settings", Object.assign({}, base, { usdRate: "12200" }));
-  assert.strictEqual(r.status, 400);
-  assert.match(r.data.errors.usdRate, /حُذف صفران/, "old-pound rate is explained");
-
-  r = await call("PUT", "/api/admin/settings", Object.assign({}, base, { usdRate: "125.5", displayCurrency: "SYP" }));
-  assert.strictEqual(r.status, 200);
-  const changedAt = r.data.settings.rateUpdatedAt;
-  assert.ok(Date.now() - new Date(changedAt).getTime() < 60e3, "date is set when the rate changes");
-
-  r = await call("PUT", "/api/admin/settings", Object.assign({}, r.data.settings, { companyName: "دار الياسمين" }));
-  assert.strictEqual(r.data.settings.rateUpdatedAt, changedAt, "date is kept when the rate is unchanged");
-
-  const pub = (await call("GET", "/api/public/data")).data;
-  assert.strictEqual(pub.settings.usdRate, 125.5);
-  assert.strictEqual(pub.settings.displayCurrency, "SYP");
-  assert.ok(pub.listings.some((l) => l.currency === "SYP"), "sample data has listings priced in SYP");
-
-  r = await call("PUT", "/api/admin/settings", Object.assign({}, r.data.settings, { usdRate: "" }));
-  assert.strictEqual(r.data.settings.usdRate, 0);
-  assert.strictEqual(r.data.settings.rateUpdatedAt, "");
-});
-
 test("logout ends the session", async () => {
   await call("POST", "/api/admin/logout");
   assert.strictEqual((await call("GET", "/api/admin/me")).status, 401);

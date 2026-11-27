@@ -33,7 +33,7 @@ Første gang serveren starter, kopieres eksempelboligene, meglerne og innstillin
 - **Oversikt:** antall publiserte boliger, til salgs og til leie, utkast og nye henvendelser. Har også en sjekkliste over det som må gjøres før lansering (firmanavn, ekte telefonnummer, bytte ut eksempelboliger).
 - **Boliger:** søk og filtrer, endre status direkte i listen (publisert / utkast / solgt / utleid), merk som «fremhevet» (vises på forsiden), rediger, kopier og slett.
 - **Legg inn og rediger bolig:**
-  - Alle feltene som vises på nettsiden: provins og by eller bydel, pris i dollar eller syriske lira, månedlig eller årlig leie, areal, rom, etasje, standard (الإكساء), retning, eierform (طابو أخضر o.l.), møblert, fasiliteter og megler.
+  - Alle feltene som vises på nettsiden: provins og by eller bydel, pris i USD eller SYP, månedlig eller årlig leie, areal, rom, etasje, standard (الإكساء), retning, eierform (طابو أخضر o.l.), møblert, fasiliteter og megler.
   - Bilder lastes opp fra PC eller mobil og forminskes automatisk før opplasting. Det første bildet er hovedbildet, og rekkefølgen kan endres.
   - En bolig kan ikke publiseres uten minst ett bilde.
   - Du blir advart hvis du prøver å forlate siden med endringer som ikke er lagret.
@@ -42,25 +42,8 @@ Første gang serveren starter, kopieres eksempelboligene, meglerne og innstillin
 - **Innstillinger:**
   - Firmanavn, slagord, telefon, WhatsApp, e-post, adresse, åpningstider, kontorer og sosiale medier.
   - E-postvarsel: hvem som skal få e-post ved nye henvendelser, og en knapp for å sende en test-e-post.
-  - Dollarkurs og hvilken valuta besøkende ser først (se «Valuta» under).
-  - Standardvaluta for nye boliger, og om merknaden «eksempler» skal vises nederst på siden.
+  - Standardvaluta, og om merknaden «eksempler» skal vises nederst på siden.
   - Brukere og bytte av passord.
-
-## Valuta: dollar og syrisk lira (ليرة سورية)
-
-Hver bolig har en pris i enten amerikanske dollar ($) eller syriske lira (ل.س). Dette velges når boligen legges inn.
-
-Under Innstillinger → «العملة وسعر الصرف» legger dere inn **dollarkursen**, altså hvor mange lira 1 dollar er verdt. Da får besøkende en knapp øverst på siden for å vise alle priser i $ eller ل.س:
-
-- Priser som er regnet om, vises med «≈». På boligsiden står den oppgitte prisen alltid under.
-- Prisfilteret i søket følger valgt valuta. Bytter den besøkende valuta, regnes beløpene i filteret om automatisk.
-- Dere velger hvilken valuta nye besøkende ser først. Den besøkende kan bytte selv, og valget huskes i nettleseren.
-- Når en bolig legges inn i panelet, vises omregnet beløp i den andre valutaen rett under prisen.
-- Står kursfeltet tomt, vises bare prisene i boligens egen valuta, og valutaknappen skjules.
-
-**Ny lira:** Fra 1. januar 2026 ble to nuller fjernet fra den syriske liraen (100 gamle lira = 1 ny). Alle beløp og kursen skrives i ny lira. Hvis kursen ser ut til å være i gamle lira (over 5 000), avviser panelet den og forklarer hvorfor.
-
-Datoen for kursen lagres automatisk og vises til besøkende. Oversikten i panelet minner dere på å oppdatere kursen når den er over en uke gammel. Startverdien (122, juli 2026) er bare et eksempel og må oppdateres.
 
 ## E-postvarsel ved nye henvendelser
 
@@ -132,7 +115,6 @@ Testene sjekker blant annet:
 - oppretting, publisering og sletting av bolig med bilde
 - henvendelser fra nettsiden
 - e-postvarsel: mottakere, at innhold fra besøkende escapes, feilhåndtering og at adressene ikke er offentlige
-- dollarkursen: at kurs i gamle lira avvises, og at datoen bare endres når kursen endres
 - at datafilene ikke kan lastes ned
 
 ## Eksempeldata og bilder

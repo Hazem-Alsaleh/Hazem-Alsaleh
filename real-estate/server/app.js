@@ -11,9 +11,8 @@ const { validateListing, validateAgent, validateSettings, validateInquiry, parse
 const { createMailer } = require("./lib/mailer");
 const { buildInquiryEmail, buildTestEmail, recipientsFor } = require("./lib/notify");
 
-const PUBLIC_SETTINGS = ["companyName", "tagline", "slogan", "phone", "whatsapp", "email", "address", "workingHours", "offices", "social",
-  "defaultCurrency", "displayCurrency", "usdRate", "rateUpdatedAt", "showSampleNotice"];
-const SETTINGS_DEFAULTS = { notifyEnabled: false, notifyAgent: true, notifyEmails: [], usdRate: 0, rateUpdatedAt: "", displayCurrency: "USD" };
+const PUBLIC_SETTINGS = ["companyName", "tagline", "slogan", "phone", "whatsapp", "email", "address", "workingHours", "offices", "social", "defaultCurrency", "showSampleNotice"];
+const SETTINGS_DEFAULTS = { notifyEnabled: false, notifyAgent: true, notifyEmails: [] };
 
 const PUBLIC_PAGES = ["index.html", "properties.html", "property.html", "sell.html", "agents.html", "contact.html"];
 const IMAGE_TYPES = {
@@ -263,11 +262,7 @@ function createApp(options) {
   admin.put("/settings", (req, res) => {
     const v = validateSettings(req.body);
     if (!v.ok) return bad(res, v.errors);
-    const old = settings();
-    // datoen for kursen oppdateres bare når kursen faktisk endres
-    v.value.rateUpdatedAt = v.value.usdRate !== old.usdRate ? (v.value.usdRate ? new Date().toISOString() : "") : old.rateUpdatedAt || "";
-    store.write("settings", v.value);
-    res.json({ settings: settings() });
+    res.json({ settings: store.write("settings", v.value) });
   });
 
   /* brukere */

@@ -88,33 +88,16 @@ window.onSiteReady(function () {
     try { history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "")); } catch (e) { /* غير مدعوم */ }
   }
 
-  /* عملة التصفية: عملة العرض التي اختارها الزائر، أو العملة الافتراضية إذا لم يُضبط سعر صرف */
-  function filterCurrency() { return S.displayCurrency() || window.SITE_CONFIG.defaultCurrency || "USD"; }
-  /* السعر بعملة التصفية، والإيجار السنوي محوّل إلى شهري. null إذا تعذّر التحويل */
-  function cmpPrice(l) {
-    var v = S.convert(l.price, S.curOf(l), filterCurrency());
-    if (v == null) return null;
-    return l.deal === "rent" && l.rentPeriod === "year" ? v / 12 : v;
-  }
-  function byPrice(dir) {
-    return function (a, b) {
-      var x = cmpPrice(a), y = cmpPrice(b);
-      if (x == null && y == null) return 0;
-      if (x == null) return 1;
-      if (y == null) return -1;
-      return dir * (x - y);
-    };
-  }
+  /* السعر الشهري للمقارنة بين الإيجار الشهري والسنوي */
+  function cmpPrice(l) { return l.deal === "rent" && l.rentPeriod === "year" ? l.price / 12 : l.price; }
 
   function matches(l, f, favs) {
     if (f.deal && l.deal !== f.deal) return false;
     if (f.gov && l.gov !== f.gov) return false;
     if (f.place && l.place !== f.place) return false;
     if (f.type.length && f.type.indexOf(l.type) === -1) return false;
-    if (f.pmin || f.pmax) {
-      var p = cmpPrice(l);
-      if (p == null || (f.pmin && p < f.pmin) || (f.pmax && p > f.pmax)) return false;
-    }
+    if (f.pmin && cmpPrice(l) < f.pmin) return false;
+    if (f.pmax && cmpPrice(l) > f.pmax) return false;
     if (f.smin && l.size < f.smin) return false;
     if (f.smax && l.size > f.smax) return false;
     if (f.rooms && (l.rooms || 0) < f.rooms) return false;
@@ -132,8 +115,8 @@ window.onSiteReady(function () {
 
   var sorters = {
     "new": function (a, b) { return b.date.localeCompare(a.date); },
-    "price-asc": byPrice(1),
-    "price-desc": byPrice(-1),
+    "price-asc": function (a, b) { return cmpPrice(a) - cmpPrice(b); },
+    "price-desc": function (a, b) { return cmpPrice(b) - cmpPrice(a); },
     "size-desc": function (a, b) { return b.size - a.size; }
   };
 
@@ -145,7 +128,7 @@ window.onSiteReady(function () {
     if (f.fav) title = "العقارات المحفوظة في المفضلة";
     el("ph-title").textContent = title;
     el("bc-current").textContent = f.deal === "sale" ? "للبيع" : f.deal === "rent" ? "للإيجار" : "العقارات";
-    el("f-price-label").textContent = (f.deal === "rent" ? "الإيجار الشهري" : "السعر") + " (" + S.curLabel(filterCurrency()) + ")";
+    el("f-price-label").textContent = f.deal === "rent" ? "الإيجار الشهري ($)" : "السعر ($)";
     document.querySelectorAll(".page-head [data-deal]").forEach(function (t) {
       t.setAttribute("aria-selected", t.getAttribute("data-deal") === f.deal ? "true" : "false");
     });
@@ -164,10 +147,7 @@ window.onSiteReady(function () {
     f.type.forEach(function (t) {
       list.push(chip(TYPES[t], function () { form.querySelector('input[name="type"][value="' + t + '"]').checked = false; }));
     });
-    if (f.pmin || f.pmax) {
-      var fc = filterCurrency();
-      list.push(chip("السعر: " + (f.pmin ? "من " + S.fmtMoney(f.pmin, fc) + " " : "") + (f.pmax ? "حتى " + S.fmtMoney(f.pmax, fc) : ""), function () { el("f-pmin").value = ""; el("f-pmax").value = ""; }));
-    }
+    if (f.pmin || f.pmax) list.push(chip("السعر: " + (f.pmin ? "من $" + S.fmtNum(f.pmin) + " " : "") + (f.pmax ? "حتى $" + S.fmtNum(f.pmax) : ""), function () { el("f-pmin").value = ""; el("f-pmax").value = ""; }));
     if (f.smin || f.smax) list.push(chip("المساحة: " + (f.smin ? "من " + f.smin + " " : "") + (f.smax ? "حتى " + f.smax : "") + " م²", function () { el("f-smin").value = ""; el("f-smax").value = ""; }));
     if (f.rooms) list.push(chip(f.rooms + " غرف أو أكثر", function () { form.querySelector('input[name="rooms"][value=""]').checked = true; }));
     if (f.own) list.push(chip(f.own, function () { own.value = ""; }));
@@ -231,16 +211,6 @@ window.onSiteReady(function () {
   el("filter-apply").addEventListener("click", function () { update(); openFilters(false); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") openFilters(false); });
   document.addEventListener("favs-changed", function () { if (el("f-fav").checked) update(); });
-  /* عند تبديل العملة نحوّل حدود السعر المكتوبة إلى العملة الجديدة */
-  document.addEventListener("currency-changed", function (e) {
-    ["f-pmin", "f-pmax"].forEach(function (id) {
-      var v = parseFloat(el(id).value);
-      if (!v || !e.detail.from) return;
-      var c = S.convert(v, e.detail.from, e.detail.to);
-      if (c != null) el(id).value = S.niceRound(c);
-    });
-    update();
-  });
 
   readURL();
   update();

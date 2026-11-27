@@ -691,3 +691,10 @@ bdi.amount, .num { font-variant-numeric: tabular-nums; }
 .guide h3, .benefit h3 { font-size: 1.15rem; }
 .office h3, .side-card h3 { font-size: 1.05rem; }
 .empty-state h3 { font-size: 1.2rem; }
+
+/* sidene for kjøp/salg og leie */
+.jump-links { display: flex; gap: 0.5rem 1.75rem; flex-wrap: wrap; margin-top: 1rem; }
+.page-head .search { margin-top: 1.75rem; max-width: 760px; }
+.gov-card span a { color: var(--muted); }
+.gov-card span a:hover { color: var(--brand-text); }
+.gov-card span { text-align: end; line-height: 1.6; }

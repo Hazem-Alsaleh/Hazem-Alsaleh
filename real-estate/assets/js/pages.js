@@ -6,24 +6,6 @@ window.onSiteReady(function () {
   var page = document.body.getAttribute("data-page");
   var $ = function (id) { return document.getElementById(id); };
 
-  if (page === "sell") {
-    var gov = $("s-gov"), place = $("s-place"), label = $("s-place-label");
-    S.fillGovSelect(gov, "اختر المحافظة");
-    S.fillPlaceSelect(place, "", label);
-    S.fillTypeSelect($("s-type"), "اختر النوع");
-    $("s-own").innerHTML = '<option value="">لا أعرف</option>' + window.OWNERSHIP_TYPES.map(function (o) { return "<option>" + o + "</option>"; }).join("");
-    gov.addEventListener("change", function () { S.fillPlaceSelect(place, gov.value, label, "غير محدد"); });
-    S.wireForm($("sell-form"), {
-      kind: "sell",
-      title: "طلب عرض عقار / تقييم",
-      fields: [["purpose", "الطلب"], ["gov", "المحافظة"], ["place", "المنطقة"], ["type", "نوع العقار"], ["size", "المساحة م²"],
-        ["rooms", "الغرف"], ["own", "الملكية"], ["price", "السعر المتوقع"], ["name", "الاسم"], ["phone", "الهاتف"],
-        ["contact", "التواصل المفضل"], ["msg", "ملاحظات"]],
-      successTitle: "شكراً لك، وصلنا طلبك",
-      onReset: function () { S.fillPlaceSelect(place, "", label); }
-    });
-  }
-
   if (page === "agents") {
     var sel = $("ag-gov"), grid = $("agents"), count = $("ag-count");
     S.fillGovSelect(sel);

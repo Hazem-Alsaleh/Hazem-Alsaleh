@@ -238,9 +238,8 @@
     "</svg>";
 
   var NAV = [
-    { href: "properties.html?deal=sale", label: "شراء", key: "sale" },
-    { href: "properties.html?deal=rent", label: "إيجار", key: "rent" },
-    { href: "sell.html", label: "بيع أو تأجير عقارك", key: "sell" },
+    { href: "sale.html", label: "البيع والشراء", key: "sale" },
+    { href: "rent.html", label: "الإيجار", key: "rent" },
     { href: "agents.html", label: "الوسطاء", key: "agents" },
     { href: "contact.html", label: "اتصل بنا", key: "contact" }
   ];
@@ -248,8 +247,7 @@
   function currentNavKey() {
     var page = document.body.getAttribute("data-page");
     if (page === "properties") {
-      var d = new URLSearchParams(location.search).get("deal");
-      return d === "rent" ? "rent" : d === "sale" ? "sale" : "";
+      return new URLSearchParams(location.search).get("deal") === "rent" ? "rent" : "sale";
     }
     return page;
   }
@@ -275,10 +273,10 @@
           NAV.map(function (n) {
             return '<li><a href="' + n.href + '"' + (n.key === active ? ' aria-current="page"' : "") + ">" + n.label + "</a></li>";
           }).join("") +
-          '<li class="nav-cta-mobile"><a class="btn btn-primary" href="sell.html#valuation">تقييم مجاني لعقارك</a></li>' +
+          '<li class="nav-cta-mobile"><a class="btn btn-primary" href="sale.html#valuation">تقييم مجاني لعقارك</a></li>' +
         "</ul></nav>" +
         '<div class="header-actions">' +
-          '<a class="btn btn-ghost header-cta" href="sell.html#valuation">تقييم مجاني لعقارك</a>' +
+          '<a class="btn btn-ghost header-cta" href="sale.html#valuation">تقييم مجاني لعقارك</a>' +
           '<button type="button" class="icon-btn menu-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="فتح القائمة">' + icon("menu") + "</button>" +
         "</div>" +
       "</div></header>";
@@ -316,11 +314,11 @@
             (social.length ? '<p class="footer-social">' + social.join(" · ") + "</p>" : "") +
           "</div>" +
           '<div><h3>العقارات</h3><ul>' +
-            '<li><a href="properties.html?deal=sale">عقارات للبيع</a></li>' +
-            '<li><a href="properties.html?deal=rent">عقارات للإيجار</a></li>' +
-            '<li><a href="properties.html?type=villa">فيلات</a></li>' +
-            '<li><a href="properties.html?type=land">أراضٍ ومزارع</a></li>' +
-            '<li><a href="properties.html?type=shop">محلات ومكاتب</a></li>' +
+            '<li><a href="sale.html">البيع والشراء</a></li>' +
+            '<li><a href="rent.html">الإيجار</a></li>' +
+            '<li><a href="properties.html?deal=sale&amp;type=villa">فيلات للبيع</a></li>' +
+            '<li><a href="properties.html?deal=sale&amp;type=land,farm">أراضٍ ومزارع</a></li>' +
+            '<li><a href="properties.html?deal=rent&amp;type=office,shop">مكاتب ومحلات للإيجار</a></li>' +
           "</ul></div>" +
           '<div><h3>المحافظات</h3><ul class="footer-govs">' + govLinks + govLinks2 + "</ul></div>" +
           '<div><h3>تواصل معنا</h3><ul class="footer-contact">' +
@@ -330,7 +328,7 @@
             '<li>' + icon("pin") + "<span>" + esc(C.address) + "</span></li>" +
             '<li>' + icon("clock") + "<span>" + esc(C.workingHours) + "</span></li>" +
           "</ul>" +
-          '<a class="btn btn-accent" href="sell.html#valuation">اطلب تقييماً مجانياً</a>' +
+          '<a class="btn btn-accent" href="sale.html#valuation">اطلب تقييماً مجانياً</a>' +
           "</div>" +
         "</div>" +
         '<div class="container footer-bottom">' +

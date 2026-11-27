@@ -6,7 +6,12 @@ En arabisk nettside for salg og utleie av boliger i alle Syrias 14 provinser. Te
 
 | Del | Hva den gjør |
 | --- | --- |
-| `index.html`, `properties.html`, `property.html`, `sell.html`, `agents.html`, `contact.html` | Den offentlige nettsiden |
+| `index.html` | Forsiden |
+| `sale.html` | Kjøp og salg (البيع والشراء): søk, nyeste salgsboliger, kjøperguide, salgsprosess og skjema for verdivurdering |
+| `rent.html` | Leie og utleie (الإيجار): søk, nyeste utleieboliger, leietakerguide, utleieprosess og skjema for å leie ut |
+| `properties.html`, `property.html` | Søkeresultater (alltid enten salg eller leie) og boligside |
+| `agents.html`, `contact.html` | Meglere og kontakt |
+| `sell.html` | Gammel adresse, sender videre til `sale.html` |
 | `admin/` | Administrasjonspanelet (`/admin/`) |
 | `server/` | Node.js-server (Express) med API, innlogging og bildeopplasting |
 | `assets/js/config.js`, `locations.js`, `listings.js` | Startdata og lister over provinser, byer, boligtyper osv. |

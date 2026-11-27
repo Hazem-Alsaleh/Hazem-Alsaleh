@@ -14,7 +14,7 @@ const { buildInquiryEmail, buildTestEmail, recipientsFor } = require("./lib/noti
 const PUBLIC_SETTINGS = ["companyName", "tagline", "slogan", "phone", "whatsapp", "email", "address", "workingHours", "offices", "social", "defaultCurrency", "showSampleNotice"];
 const SETTINGS_DEFAULTS = { notifyEnabled: false, notifyAgent: true, notifyEmails: [] };
 
-const PUBLIC_PAGES = ["index.html", "properties.html", "property.html", "sell.html", "agents.html", "contact.html"];
+const PUBLIC_PAGES = ["index.html", "properties.html", "property.html", "sale.html", "rent.html", "sell.html", "agents.html", "contact.html"];
 const IMAGE_TYPES = {
   "image/jpeg": { ext: "jpg", check: (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff },
   "image/png": { ext: "png", check: (b) => b.slice(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) },

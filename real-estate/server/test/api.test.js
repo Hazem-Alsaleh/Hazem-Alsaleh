@@ -118,7 +118,7 @@ test("data and server files are not served", async () => {
     const r = await fetch(base + u);
     assert.strictEqual(r.status, 404, u);
   }
-  assert.strictEqual((await fetch(base + "/properties.html")).status, 200);
+  for (const page of ["/properties.html", "/sale.html", "/rent.html"]) assert.strictEqual((await fetch(base + page)).status, 200, page);
   assert.strictEqual((await fetch(base + "/admin/")).status, 200);
   assert.strictEqual((await fetch(base + "/admin/admin.js")).status, 200);
 });

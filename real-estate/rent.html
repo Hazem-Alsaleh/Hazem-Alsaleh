@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الإيجار | اسم الشركة</title>
+<meta name="description" content="شقق مفروشة وغير مفروشة ومكاتب ومحلات للإيجار في كل المحافظات السورية، وتأجير عقارك مع وسيط محلي.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Reem+Kufi:wght@700&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="rent">
+<div id="site-header"></div>
+
+<main>
+  <section class="page-head page-head-pad">
+    <div class="container">
+      <ol class="breadcrumb">
+        <li><a href="index.html">الرئيسية</a></li>
+        <li>الإيجار</li>
+      </ol>
+      <h1>استئجار وتأجير العقارات</h1>
+      <p class="lead">شقق مفروشة وغير مفروشة ومكاتب ومحلات للإيجار الشهري أو السنوي، أو أجّر عقارك مع وسيط يتولّى الإعلان والمعاينات والعقد.</p>
+      <p class="jump-links"><a class="text-link" href="#listings">أبحث عن عقار للإيجار</a><a class="text-link" href="#let">أريد تأجير عقاري</a></p>
+        <form class="search" id="deal-search" role="search" action="properties.html">
+          <div class="search-bar">
+            <div class="field">
+              <label for="ds-gov">المحافظة</label>
+              <select id="ds-gov" name="gov"></select>
+            </div>
+            <div class="field">
+              <label for="ds-place" id="ds-place-label">المدينة / الحي</label>
+              <select id="ds-place" name="place"></select>
+            </div>
+            <div class="field">
+              <label for="ds-type">نوع العقار</label>
+              <select id="ds-type" name="type"></select>
+            </div>
+            <button class="btn btn-primary" type="submit">ابحث</button>
+          </div>
+          <p class="quick-links">
+            <a href="properties.html?deal=rent&amp;type=apartment">شقق</a>
+            <a href="properties.html?deal=rent&amp;furnished=1">مفروش</a>
+            <a href="properties.html?deal=rent&amp;type=office">مكاتب</a>
+            <a href="properties.html?deal=rent&amp;type=shop">محلات</a>
+          </p>
+        </form>
+    </div>
+  </section>
+
+  <section class="section" id="listings">
+    <div class="container">
+      <div class="section-head">
+        <h2>أحدث العقارات للإيجار</h2>
+        <a class="text-link" id="deal-all" href="properties.html?deal=rent">كل العقارات للإيجار</a>
+      </div>
+      <div class="cards cards-4" id="deal-listings"></div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-head"><h2>قبل أن تستأجر</h2></div>
+      <div class="guide">
+        <article>
+          <span class="eyebrow">المعاينة</span>
+          <h3>عاين العقار جيداً</h3>
+          <p>تأكّد من الخدمات قبل أن تتفق على الأجرة.</p>
+          <details>
+            <summary>اقرأ المزيد</summary>
+            <div>
+              <ul>
+                <li>عاين العقار نهاراً، وافتح الحنفيات والأضواء</li>
+                <li>اسأل عن الأمبيرات والطاقة الشمسية والتدفئة وخزان الماء</li>
+                <li>تأكّد من حالة الأثاث والأجهزة إذا كان العقار مفروشاً</li>
+              </ul>
+            </div>
+          </details>
+        </article>
+        <article>
+          <span class="eyebrow">الدفعات</span>
+          <h3>الأجرة والدفعة المقدمة والتأمين</h3>
+          <p>اتفق على كل المبالغ كتابياً قبل الاستلام.</p>
+          <details>
+            <summary>اقرأ المزيد</summary>
+            <div>
+              <ul>
+                <li>قيمة الأجرة وعملتها وموعد دفعها</li>
+                <li>عدد أشهر الدفعة المقدمة ومبلغ التأمين وشروط استرداده</li>
+                <li>من يدفع فواتير الماء والكهرباء والأمبيرات</li>
+              </ul>
+            </div>
+          </details>
+        </article>
+        <article>
+          <span class="eyebrow">العقد</span>
+          <h3>توثيق العقد والاستلام</h3>
+          <p>عقد واضح يحمي المؤجّر والمستأجر.</p>
+          <details>
+            <summary>اقرأ المزيد</summary>
+            <div>
+              <ul>
+                <li>حدّد مدة العقد وشروط التجديد والإخلاء</li>
+                <li>وثّق العقد رسمياً لدى الجهة المختصة</li>
+                <li>صوّر حالة العقار والأثاث يوم الاستلام</li>
+              </ul>
+            </div>
+          </details>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="let">
+    <div class="container split">
+      <div>
+        <h2>تريد تأجير عقارك؟</h2>
+        <p class="lead-text">نقدّر لك أجرة مناسبة بناءً على الإيجارات الفعلية في الحي، ونعرض العقار على مستأجرين جادّين، ونتابع العقد والاستلام حتى تطمئن.</p>
+        <ul class="plain-points mt-1">
+          <li>تقدير مجاني للأجرة</li>
+          <li>معاينات مع مستأجرين جادّين فقط</li>
+          <li>متابعة الإيجار والصيانة لأصحاب العقارات خارج سوريا</li>
+        </ul>
+        <p class="mt-1"><a class="btn btn-primary" href="#valuation">اعرض عقارك للإيجار</a></p>
+      </div>
+      <img src="assets/img/site-syria-facade.jpg" alt="واجهة بيت سوري بنوافذ خشبية ونباتات على الشرفة" width="1400" height="1050" loading="lazy">
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head"><div><h2>مراحل التأجير</h2><p>من تقدير الأجرة حتى تسليم المفتاح، ومتابعة الإيجار إن أردت.</p></div></div>
+      <ol class="process">
+        <li><h3>تقدير الأجرة</h3><p>يعاين الوسيط العقار ويقترح أجرة مناسبة بناءً على الإيجارات الفعلية في الحي.</p></li>
+        <li><h3>تجهيز العقار والإعلان</h3><p>ننصحك بما يرفع قيمة الإيجار، ثم نصوّر العقار وننشر إعلانه.</p></li>
+        <li><h3>المعاينات واختيار المستأجر</h3><p>ننظّم المعاينات ونتحقق من جدية المستأجر قبل الاتفاق.</p></li>
+        <li><h3>العقد والتسليم</h3><p>عقد واضح يحدد المدة والدفعات والتأمين، وتسليم يُوثَّق فيه حال العقار.</p></li>
+        <li><h3>متابعة الإيجار</h3><p>لأصحاب العقارات خارج سوريا: تحصيل الأجرة ومتابعة الصيانة.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="valuation">
+    <div class="container form-layout">
+      <aside>
+        <h2>اعرض عقارك للإيجار</h2>
+        <p>املأ النموذج وسيتصل بك وسيط من محافظتك خلال يوم عمل لمعاينة العقار وتقدير الأجرة.</p>
+        <p>تفضّل الاتصال مباشرة؟ اتصل على <a data-tel href="#"><bdi dir="ltr" data-phone></bdi></a> أو راسلنا على <a data-whatsapp="مرحباً، أريد تأجير عقاري" href="#" target="_blank" rel="noopener">واتساب</a>.</p>
+      </aside>
+      <div class="form-card">
+        <form id="owner-form" class="form-grid" novalidate>
+          <fieldset class="fieldset span-2">
+            <legend>نوع الطلب</legend>
+            <div class="choice-row">
+              <label class="choice"><input type="radio" name="purpose" value="تأجير" checked><span>تأجير العقار</span></label>
+              <label class="choice"><input type="radio" name="purpose" value="تقدير الأجرة فقط"><span>تقدير الأجرة فقط</span></label>
+            </div>
+          </fieldset>
+          <div class="field">
+            <label for="s-gov">المحافظة</label>
+            <select id="s-gov" name="gov" required></select>
+          </div>
+          <div class="field">
+            <label for="s-place" id="s-place-label">المدينة / الحي</label>
+            <select id="s-place" name="place"></select>
+          </div>
+          <div class="field">
+            <label for="s-type">نوع العقار</label>
+            <select id="s-type" name="type" required></select>
+          </div>
+          <div class="field">
+            <label for="s-size">المساحة التقريبية (م²)</label>
+            <input id="s-size" name="size" type="number" min="1" inputmode="numeric" dir="ltr">
+          </div>
+          <div class="field">
+            <label for="s-rooms">عدد الغرف</label>
+            <select id="s-rooms" name="rooms">
+              <option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5 أو أكثر</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="s-furnished">الفرش</label>
+            <select id="s-furnished" name="furnished">
+              <option value="">—</option><option>مفروش</option><option>مفروش جزئياً</option><option>غير مفروش</option>
+            </select>
+          </div>
+          <div class="field span-2">
+            <label for="s-price">الأجرة المتوقعة (اختياري)</label>
+            <input id="s-price" name="price" type="text" placeholder="مثال: 400 دولار شهرياً">
+          </div>
+          <div class="field">
+            <label for="s-name">الاسم</label>
+            <input id="s-name" name="name" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="s-phone">رقم الهاتف</label>
+            <input id="s-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="09xx xxx xxx" required>
+          </div>
+          <fieldset class="fieldset span-2">
+            <legend>طريقة التواصل المفضلة</legend>
+            <div class="choice-row">
+              <label class="choice"><input type="radio" name="contact" value="اتصال هاتفي" checked><span>اتصال هاتفي</span></label>
+              <label class="choice"><input type="radio" name="contact" value="واتساب"><span>واتساب</span></label>
+            </div>
+          </fieldset>
+          <div class="field span-2">
+            <label for="s-msg">ملاحظات إضافية (اختياري)</label>
+            <textarea id="s-msg" name="msg" rows="4" placeholder="مثل الطابق والإكساء والاتجاه، أو أي معلومة تساعد الوسيط"></textarea>
+          </div>
+          <div class="span-2">
+            <button class="btn btn-accent" type="submit">أرسل الطلب</button>
+            <p class="form-note mt-1">نستخدم بياناتك فقط للتواصل معك بخصوص عقارك.</p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head"><h2>أسئلة شائعة</h2></div>
+      <div class="faq">
+        <details>
+          <summary>كم تبلغ عمولة التأجير؟</summary>
+          <div><p>تُحدَّد العمولة مسبقاً وتُكتب في عقد الوساطة، وتُدفع عند توقيع عقد الإيجار.</p></div>
+        </details>
+        <details>
+          <summary>ما مدة عقد الإيجار المعتادة؟</summary>
+          <div><p>يختلف ذلك، والشائع عقود شهرية مع دفعة مقدمة لعدة أشهر أو عقود سنوية. نتفق مع الطرفين على ما يناسبهما ونكتبه في العقد.</p></div>
+        </details>
+        <details>
+          <summary>هل يمكن تأجير العقار مفروشاً؟</summary>
+          <div><p>نعم، وغالباً تكون أجرة العقار المفروش أعلى. نوثّق قائمة الأثاث وحالته في العقد.</p></div>
+        </details>
+        <details>
+          <summary>هل تديرون العقار بعد تأجيره؟</summary>
+          <div><p>نعم لأصحاب العقارات خارج سوريا: نحصّل الأجرة ونتابع الصيانة ونبقيك على اطلاع عبر واتساب.</p></div>
+        </details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/locations.js"></script>
+<script src="assets/js/listings.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/deal.js"></script>
+</body>
+</html>

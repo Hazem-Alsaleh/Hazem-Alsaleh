@@ -24,7 +24,7 @@ window.onSiteReady(function () {
 
   function readURL() {
     var p = new URLSearchParams(location.search);
-    state.deal = p.get("deal") === "sale" || p.get("deal") === "rent" ? p.get("deal") : "";
+    state.deal = p.get("deal") === "rent" ? "rent" : "sale";
     gov.value = p.get("gov") || "";
     S.fillPlaceSelect(place, gov.value, placeLabel);
     place.value = p.get("place") || "";
@@ -112,17 +112,17 @@ window.onSiteReady(function () {
     var PLURAL = { apartment: "شقق", house: "منازل", "arabic-house": "بيوت عربية", villa: "فيلات", chalet: "شاليهات", land: "أراضٍ", farm: "مزارع", shop: "محلات تجارية", office: "مكاتب" };
     var what = f.type.length === 1 ? (PLURAL[f.type[0]] || TYPES[f.type[0]]) : "عقارات";
     var where = f.place ? " في " + S.placeShort(f.place) : f.gov ? " في " + S.govName(f.gov) : " في سوريا";
-    var dealTxt = f.deal === "sale" ? " للبيع" : f.deal === "rent" ? " للإيجار" : " للبيع والإيجار";
+    var dealTxt = f.deal === "rent" ? " للإيجار" : " للبيع";
     var title = what + dealTxt + where;
     el("ph-title").textContent = title;
-    el("bc-current").textContent = f.deal === "sale" ? "للبيع" : f.deal === "rent" ? "للإيجار" : "العقارات";
+    el("bc-current").innerHTML = f.deal === "rent" ? '<a href="rent.html">الإيجار</a>' : '<a href="sale.html">البيع والشراء</a>';
     document.querySelectorAll(".page-head [data-deal]").forEach(function (t) {
       t.setAttribute("aria-selected", t.getAttribute("data-deal") === f.deal ? "true" : "false");
     });
     document.querySelectorAll('.main-nav a').forEach(function (a) {
       var h = a.getAttribute("href");
-      var on = (f.deal === "sale" && h === "properties.html?deal=sale") || (f.deal === "rent" && h === "properties.html?deal=rent");
-      if (on) a.setAttribute("aria-current", "page"); else if (h.indexOf("properties.html") === 0) a.removeAttribute("aria-current");
+      if (h !== "sale.html" && h !== "rent.html") return;
+      if (h === (f.deal === "rent" ? "rent.html" : "sale.html")) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
     });
   }
 
@@ -152,12 +152,13 @@ window.onSiteReady(function () {
   function update() {
     var f = collect();
     var out = L.filter(function (l) { return matches(l, f); }).sort(sorters[f.sort] || sorters["new"]);
-    S.renderCards(results, out, !f.deal);
+    S.renderCards(results, out, false);
     empty.hidden = out.length > 0;
     results.hidden = out.length === 0;
     var n = out.length;
     var word = n === 1 ? "عقار واحد" : n === 2 ? "عقاران" : n >= 3 && n <= 10 ? n + " عقارات" : n + " عقاراً";
-    count.innerHTML = (n === 0 ? "لا نتائج" : word) + " <span>من أصل " + L.length + "</span>";
+    var total = L.filter(function (l) { return l.deal === f.deal; }).length;
+    count.innerHTML = (n === 0 ? "لا نتائج" : word) + " <span>من أصل " + total + "</span>";
     el("filter-apply").textContent = n ? "عرض " + word : "لا نتائج";
     headings(f);
     renderChips(f);

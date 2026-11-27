@@ -52,10 +52,14 @@ window.onSiteReady(function () {
   showFeatured("sale");
 
   /* المحافظات مع عدد العقارات */
+  function countWord(n) { return n === 1 ? "عقار واحد" : n === 2 ? "عقاران" : n <= 10 ? n + " عقارات" : n + " عقاراً"; }
   document.getElementById("gov-grid").innerHTML = window.GOVERNORATES.map(function (g) {
-    var n = L.filter(function (l) { return l.gov === g.id; }).length;
-    var label = n === 0 ? "—" : n === 1 ? "عقار واحد" : n === 2 ? "عقاران" : n <= 10 ? n + " عقارات" : n + " عقاراً";
-    return '<a class="gov-card" href="properties.html?gov=' + g.id + '"><strong>' + g.name + "</strong><span>" + label + "</span></a>";
+    var sale = L.filter(function (l) { return l.gov === g.id && l.deal === "sale"; }).length;
+    var rent = L.filter(function (l) { return l.gov === g.id && l.deal === "rent"; }).length;
+    var links = [];
+    if (sale) links.push('<a href="properties.html?deal=sale&gov=' + g.id + '">للبيع: ' + countWord(sale) + "</a>");
+    if (rent) links.push('<a href="properties.html?deal=rent&gov=' + g.id + '">للإيجار: ' + countWord(rent) + "</a>");
+    return '<div class="gov-card"><strong>' + g.name + "</strong><span>" + (links.length ? links.join("<br>") : "قريباً") + "</span></div>";
   }).join("");
 
   /* نموذج التقييم السريع */

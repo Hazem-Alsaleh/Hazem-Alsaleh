@@ -1,4 +1,4 @@
-(function () {
+window.onSiteReady(function () {
   "use strict";
   var S = window.SITE;
   var L = window.LISTINGS;
@@ -52,8 +52,9 @@
   S.fillGovSelect(document.getElementById("qv-gov"), "اختر المحافظة");
   S.fillTypeSelect(document.getElementById("qv-type"), "اختر النوع");
   S.wireForm(document.getElementById("quick-valuation"), {
+    kind: "valuation",
     title: "طلب تقييم مجاني لعقار",
     fields: [["gov", "المحافظة"], ["type", "نوع العقار"], ["name", "الاسم"], ["phone", "الهاتف"]],
     successTitle: "شكراً لك، وصلنا طلب التقييم"
   });
-})();
+});

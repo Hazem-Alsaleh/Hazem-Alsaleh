@@ -1,4 +1,4 @@
-(function () {
+window.onSiteReady(function () {
   "use strict";
   var S = window.SITE;
   var L = window.LISTINGS;
@@ -214,4 +214,4 @@
 
   readURL();
   update();
-})();
+});

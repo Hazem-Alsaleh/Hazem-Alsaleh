@@ -1,5 +1,5 @@
 /* منطق صفحات: بيع/تأجير عقارك، الوسطاء، اتصل بنا */
-(function () {
+window.onSiteReady(function () {
   "use strict";
   var S = window.SITE;
   var C = window.SITE_CONFIG;
@@ -14,6 +14,7 @@
     $("s-own").innerHTML = '<option value="">لا أعرف</option>' + window.OWNERSHIP_TYPES.map(function (o) { return "<option>" + o + "</option>"; }).join("");
     gov.addEventListener("change", function () { S.fillPlaceSelect(place, gov.value, label, "غير محدد"); });
     S.wireForm($("sell-form"), {
+      kind: "sell",
       title: "طلب عرض عقار / تقييم",
       fields: [["purpose", "الطلب"], ["gov", "المحافظة"], ["place", "المنطقة"], ["type", "نوع العقار"], ["size", "المساحة م²"],
         ["rooms", "الغرف"], ["own", "الملكية"], ["price", "السعر المتوقع"], ["name", "الاسم"], ["phone", "الهاتف"],
@@ -49,8 +50,8 @@
             "<li>" + S.icon("home") + "<span>" + (n ? n + " عقارات معروضة حالياً" : "لا عقارات معروضة حالياً") + "</span></li>" +
           "</ul>" +
           '<div class="agent-actions">' +
-            '<a class="btn btn-ghost" href="' + S.telLink() + '">' + S.icon("phone") + "اتصال</a>" +
-            '<a class="btn btn-whatsapp" href="' + S.waLink(msg) + '" target="_blank" rel="noopener">' + S.icon("chat") + "واتساب</a>" +
+            '<a class="btn btn-ghost" href="' + S.telLink(a.phone) + '">' + S.icon("phone") + "اتصال</a>" +
+            '<a class="btn btn-whatsapp" href="' + S.waLink(msg, a.whatsapp) + '" target="_blank" rel="noopener">' + S.icon("chat") + "واتساب</a>" +
           "</div>" +
         "</article>";
       }).join("");
@@ -70,9 +71,10 @@
     }).join("");
     S.fillGovSelect($("c-gov"), "اختر المحافظة");
     S.wireForm($("contact-form"), {
+      kind: "contact",
       title: "رسالة من الموقع",
       fields: [["topic", "الموضوع"], ["gov", "المحافظة"], ["name", "الاسم"], ["phone", "الهاتف"], ["email", "البريد"], ["msg", "الرسالة"]],
       successTitle: "شكراً لك، وصلت رسالتك"
     });
   }
-})();
+});

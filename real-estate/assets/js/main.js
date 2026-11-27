@@ -7,6 +7,9 @@
   var C = window.SITE_CONFIG;
   var GOVS = window.GOVERNORATES;
   var TYPES = window.PROPERTY_TYPES;
+  var readyQueue = [];
+  var isReady = false;
+  window.onSiteReady = function (fn) { if (isReady) fn(); else readyQueue.push(fn); };
 
   document.documentElement.lang = "ar";
   document.documentElement.dir = "rtl";
@@ -79,14 +82,17 @@
     if (n >= 3 && n <= 10) return n + " غرف";
     return n + " غرفة";
   }
-  function img(name) { return "assets/img/" + name + ".jpg"; }
+  function img(name) {
+    if (!name) return "";
+    return name.indexOf("/") !== -1 ? name : "assets/img/" + name + ".jpg";
+  }
   function findListing(id) {
     id = Number(id);
     for (var i = 0; i < window.LISTINGS.length; i++) if (window.LISTINGS[i].id === id) return window.LISTINGS[i];
     return null;
   }
   function agentById(id) {
-    for (var i = 0; i < window.AGENTS.length; i++) if (window.AGENTS[i].id === id) return window.AGENTS[i];
+    for (var i = 0; i < window.AGENTS.length; i++) if (String(window.AGENTS[i].id) === String(id)) return window.AGENTS[i];
     return null;
   }
   function initials(name) {
@@ -94,10 +100,10 @@
     var last = parts.length > 1 ? parts[parts.length - 1].replace(/^ال/, "") : "";
     return parts[0].charAt(0) + (last ? " " + last.charAt(0) : "");
   }
-  function waLink(text) {
-    return "https://wa.me/" + C.whatsapp + (text ? "?text=" + encodeURIComponent(text) : "");
+  function waLink(text, number) {
+    return "https://wa.me/" + (number || C.whatsapp) + (text ? "?text=" + encodeURIComponent(text) : "");
   }
-  function telLink() { return "tel:" + C.phone.replace(/\s+/g, ""); }
+  function telLink(phone) { return "tel:" + String(phone || C.phone).replace(/\s+/g, ""); }
 
   /* ---------- المفضلة (تُحفظ في متصفح الزائر فقط) ---------- */
   var FAV_KEY = "aqar-favorites";
@@ -200,37 +206,65 @@
       Object.keys(TYPES).map(function (k) { return '<option value="' + k + '">' + TYPES[k] + "</option>"; }).join("");
   }
 
-  /* ---------- النماذج (بدون خادم: رسالة تأكيد + إرسال عبر واتساب) ---------- */
+  /* ---------- النماذج ----------
+   * مع الخادم: يُحفظ الطلب ويظهر في لوحة التحكم.
+   * بدون خادم (استضافة ثابتة): يُرسل الطلب عبر واتساب برسالة جاهزة.
+   */
   function wireForm(form, opts) {
+    var hp = document.createElement("input");
+    hp.type = "text"; hp.name = "website"; hp.tabIndex = -1; hp.autocomplete = "off";
+    hp.className = "hp"; hp.setAttribute("aria-hidden", "true");
+    form.appendChild(hp);
+
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       if (!form.checkValidity()) { form.reportValidity(); return; }
       var data = {};
       new FormData(form).forEach(function (v, k) { data[k] = String(v).trim(); });
-      var lines = [opts.title];
+      var pairs = [];
       (opts.fields || []).forEach(function (f) {
         var el = form.elements[f[0]];
         var v = data[f[0]];
         if (el && el.tagName === "SELECT" && el.selectedIndex > -1 && v) v = el.options[el.selectedIndex].text;
-        if (v) lines.push(f[1] + ": " + v);
+        if (v) pairs.push([f[1], v]);
       });
-      if (opts.extra) lines.push(opts.extra);
-      var msg = lines.join("\n");
-      var box = document.createElement("div");
-      box.className = "form-success";
-      box.setAttribute("role", "status");
-      box.innerHTML =
-        '<div class="form-success-icon">' + icon("check") + "</div>" +
-        "<h3>" + esc(opts.successTitle || "شكراً لك، وصلنا طلبك") + "</h3>" +
-        "<p>" + esc(opts.successText || "سيتواصل معك أحد وسطائنا خلال يوم عمل واحد. لرد أسرع، أرسل الطلب نفسه عبر واتساب.") + "</p>" +
-        '<a class="btn btn-whatsapp" href="' + waLink(msg) + '" target="_blank" rel="noopener">' + icon("chat") + "إرسال الطلب عبر واتساب</a>" +
-        '<button type="button" class="btn btn-ghost form-reset">إرسال طلب آخر</button>';
-      form.hidden = true;
-      form.parentNode.insertBefore(box, form.nextSibling);
-      box.querySelector(".form-reset").addEventListener("click", function () {
-        form.reset(); box.remove(); form.hidden = false;
-        if (opts.onReset) opts.onReset();
-      });
+      var title = typeof opts.title === "function" ? opts.title() : opts.title;
+      var msg = [title].concat(pairs.map(function (p) { return p[0] + ": " + p[1]; })).join("\n");
+      var extra = pairs.filter(function (p) { return p[0] !== "الاسم" && p[0] !== "الهاتف"; });
+
+      if (window.DATA_SOURCE !== "server") { done(false); return; }
+      var btn = form.querySelector('[type="submit"]');
+      var label = btn ? btn.textContent : "";
+      if (btn) { btn.disabled = true; btn.textContent = "جارٍ الإرسال…"; }
+      fetch("api/public/inquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind: opts.kind || "contact", listingId: opts.listingId || null, name: data.name, phone: data.phone, fields: extra, website: data.website })
+      }).then(function (r) { return r.ok ? done(true) : done(false); }, function () { done(false); })
+        .then(function () { if (btn) { btn.disabled = false; btn.textContent = label; } });
+
+      function done(saved) {
+        var box = document.createElement("div");
+        box.className = "form-success";
+        box.setAttribute("role", "status");
+        box.innerHTML = saved
+          ? '<div class="form-success-icon">' + icon("check") + "</div>" +
+            "<h3>" + esc(opts.successTitle || "شكراً لك، وصلنا طلبك") + "</h3>" +
+            "<p>" + esc(opts.successText || "سيتواصل معك أحد وسطائنا خلال يوم عمل واحد.") + "</p>" +
+            '<a class="btn btn-ghost" href="' + waLink(msg, opts.whatsapp) + '" target="_blank" rel="noopener">' + icon("chat") + "للرد الأسرع: راسلنا على واتساب</a>" +
+            '<button type="button" class="btn btn-ghost form-reset">إرسال طلب آخر</button>'
+          : '<div class="form-success-icon">' + icon("chat") + "</div>" +
+            "<h3>خطوة أخيرة: أرسل طلبك عبر واتساب</h3>" +
+            "<p>اضغط الزر لفتح واتساب برسالة جاهزة فيها تفاصيل طلبك، ثم اضغط إرسال.</p>" +
+            '<a class="btn btn-whatsapp" href="' + waLink(msg, opts.whatsapp) + '" target="_blank" rel="noopener">' + icon("chat") + "إرسال الطلب عبر واتساب</a>" +
+            '<button type="button" class="btn btn-ghost form-reset">تعديل الطلب</button>';
+        form.hidden = true;
+        form.parentNode.insertBefore(box, form.nextSibling);
+        box.querySelector(".form-reset").addEventListener("click", function () {
+          if (saved) { form.reset(); if (opts.onReset) opts.onReset(); }
+          box.remove(); form.hidden = false;
+        });
+      }
     });
   }
 
@@ -344,7 +378,7 @@
         "</div>" +
         '<div class="container footer-bottom">' +
           "<p>© " + year + " " + esc(C.companyName) + ". جميع الحقوق محفوظة.</p>" +
-          '<p class="footer-note">العقارات والأسماء المعروضة حالياً أمثلة توضيحية.</p>' +
+          (C.showSampleNotice !== false ? '<p class="footer-note">العقارات والأسماء المعروضة حالياً أمثلة توضيحية.</p>' : "") +
         "</div>" +
       "</footer>";
   }
@@ -357,10 +391,18 @@
     document.querySelectorAll("[data-whatsapp]").forEach(function (el) { el.setAttribute("href", waLink(el.getAttribute("data-whatsapp") || "")); });
   }
 
-  renderHeader();
-  renderFooter();
-  applyCompanyName();
-  syncFavUI();
+  function init() {
+    C = window.SITE_CONFIG;
+    C.social = C.social || {};
+    renderHeader();
+    renderFooter();
+    applyCompanyName();
+    syncFavUI();
+    isReady = true;
+    readyQueue.forEach(function (fn) { fn(); });
+    readyQueue = [];
+  }
+  (window.DATA_READY || Promise.resolve()).then(init, init);
 
   window.SITE = {
     icon: icon, esc: esc, fmtNum: fmtNum, govById: govById, govName: govName, placeShort: placeShort,

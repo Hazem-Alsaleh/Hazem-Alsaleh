@@ -1,4 +1,4 @@
-(function () {
+window.onSiteReady(function () {
   "use strict";
   var S = window.SITE;
   var C = window.SITE_CONFIG;
@@ -96,8 +96,8 @@
         "<h3>الوسيط المسؤول</h3>" +
         '<div class="agent"><span class="avatar" aria-hidden="true">' + e(S.initials(agent.name)) + "</span><div><strong>" + e(agent.name) + "</strong><span>" + e(agent.role) + "</span></div></div>" +
         '<div class="agent-actions">' +
-          '<a class="btn btn-ghost" href="' + S.telLink() + '">' + i("phone") + "اتصال</a>" +
-          '<a class="btn btn-whatsapp" href="' + S.waLink(waText + "\nالوسيط: " + agent.name) + '" target="_blank" rel="noopener">' + i("chat") + "واتساب</a>" +
+          '<a class="btn btn-ghost" href="' + S.telLink(agent.phone) + '">' + i("phone") + "اتصال</a>" +
+          '<a class="btn btn-whatsapp" href="' + S.waLink(waText + "\nالوسيط: " + agent.name, agent.whatsapp) + '" target="_blank" rel="noopener">' + i("chat") + "واتساب</a>" +
         "</div>" +
       "</div>"
     : "";
@@ -182,6 +182,9 @@
 
   /* نموذج المعاينة */
   S.wireForm(document.getElementById("viewing-form"), {
+    kind: "viewing",
+    listingId: l.id,
+    whatsapp: agent && agent.whatsapp,
     title: "طلب معاينة للعقار رقم #" + l.id + " — " + l.title + " (" + locText + ")",
     fields: [["name", "الاسم"], ["phone", "الهاتف"], ["date", "اليوم المفضّل"], ["time", "الوقت"], ["msg", "ملاحظات"]],
     successTitle: "تم استلام طلب المعاينة",
@@ -235,4 +238,4 @@
     if (ev.key === "ArrowLeft") show(cur + 1);
     if (ev.key === "ArrowRight") show(cur - 1);
   });
-})();
+});

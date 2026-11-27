@@ -33,18 +33,28 @@ window.onSiteReady(function () {
     location.href = "properties.html?" + p.toString();
   });
 
-  /* العقارات المختارة */
+  /* عقارات جديدة: تبويب للبيع / للإيجار */
   function newest(a, b) { return (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || b.date.localeCompare(a.date); }
-  var sale = L.filter(function (l) { return l.deal === "sale"; }).sort(newest).slice(0, 6);
-  var rent = L.filter(function (l) { return l.deal === "rent"; }).sort(newest).slice(0, 3);
-  S.renderCards(document.getElementById("featured-sale"), sale);
-  S.renderCards(document.getElementById("featured-rent"), rent);
+  var grid = document.getElementById("featured");
+  var allLink = document.getElementById("featured-all");
+  function showFeatured(deal) {
+    var list = L.filter(function (l) { return l.deal === deal; }).sort(newest).slice(0, 8);
+    S.renderCards(grid, list);
+    allLink.setAttribute("href", "properties.html?deal=" + deal);
+    allLink.textContent = deal === "rent" ? "كل العقارات للإيجار" : "كل العقارات للبيع";
+    document.querySelectorAll("[data-featured]").forEach(function (t) {
+      t.setAttribute("aria-selected", t.getAttribute("data-featured") === deal ? "true" : "false");
+    });
+  }
+  document.querySelectorAll("[data-featured]").forEach(function (t) {
+    t.addEventListener("click", function () { showFeatured(t.getAttribute("data-featured")); });
+  });
+  showFeatured("sale");
 
   /* المحافظات مع عدد العقارات */
-  var grid = document.getElementById("gov-grid");
-  grid.innerHTML = window.GOVERNORATES.map(function (g) {
+  document.getElementById("gov-grid").innerHTML = window.GOVERNORATES.map(function (g) {
     var n = L.filter(function (l) { return l.gov === g.id; }).length;
-    var label = n === 0 ? "قريباً" : n === 1 ? "عقار واحد" : n === 2 ? "عقاران" : n <= 10 ? n + " عقارات" : n + " عقاراً";
+    var label = n === 0 ? "—" : n === 1 ? "عقار واحد" : n === 2 ? "عقاران" : n <= 10 ? n + " عقارات" : n + " عقاراً";
     return '<a class="gov-card" href="properties.html?gov=' + g.id + '"><strong>' + g.name + "</strong><span>" + label + "</span></a>";
   }).join("");
 

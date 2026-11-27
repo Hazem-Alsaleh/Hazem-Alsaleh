@@ -199,7 +199,7 @@ window.LISTINGS = [
     size: 150, rooms: 3, baths: 2, floor: 3, totalFloors: 6, year: 2007,
     finish: "ديلوكس", direction: "قبلي شرقي", ownership: "طابو أخضر", furnished: false,
     features: ["مصعد", "بلكون", "شوفاج", "اشتراك أمبيرات", "خزان ماء"],
-    images: ["building-1", "living-6", "living-4"],
+    images: ["living-6", "building-1", "living-4"],
     description: "شقة في حي الفرقان الراقي بحلب، قريبة من الجامعة والأسواق. صالون كبير وثلاث غرف نوم وحمامان، بإكساء ديلوكس وتهوية ممتازة.",
     agent: "a5", date: "2026-11-17"
   },

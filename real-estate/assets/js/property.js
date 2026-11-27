@@ -43,16 +43,16 @@ window.onSiteReady(function () {
     (l.images.length > 1 ? '<button type="button" class="gallery-all" data-img="0">' + i("camera") + "عرض كل الصور (" + l.images.length + ")</button>" : "") +
     "</div>";
 
-  /* الأرقام الرئيسية */
-  var keys = [];
-  if (l.rooms) keys.push(["bed", l.rooms, "غرف النوم"]);
-  if (l.baths) keys.push(["bath", l.baths, "الحمامات"]);
-  keys.push(["area", S.fmtNum(l.size) + "<small>م²</small>", "المساحة"]);
-  if (l.land && l.land !== l.size) keys.push(["layers", S.fmtNum(l.land) + "<small>م²</small>", "مساحة الأرض"]);
-  else if (typeof l.floor === "number" && l.totalFloors) keys.push(["layers", l.floor === 0 ? "أرضي" : l.floor, "الطابق"]);
-  var keyStrip = '<div class="key-strip">' + keys.slice(0, 4).map(function (k) {
-    return "<div>" + i(k[0]) + "<strong class=\"num\">" + k[1] + "</strong><span>" + k[2] + "</span></div>";
-  }).join("") + "</div>";
+  /* الأرقام الرئيسية في سطر واحد */
+  var keys = [[l.deal === "rent" ? "الإيجار" : "السعر", S.priceHTML(l).replace(/<span class="per">[^<]*<\/span>/, "")]];
+  keys.push(["المساحة", '<bdi>' + S.fmtNum(l.size) + "</bdi> م²"]);
+  if (l.rooms) keys.push(["غرف النوم", l.rooms]);
+  if (l.baths) keys.push(["الحمامات", l.baths]);
+  if (l.land && l.land !== l.size) keys.push(["الأرض", '<bdi>' + S.fmtNum(l.land) + "</bdi> م²"]);
+  else if (typeof l.floor === "number" && l.totalFloors) keys.push(["الطابق", l.floor === 0 ? "أرضي" : l.floor]);
+  var keyStrip = '<dl class="facts-bar">' + keys.slice(0, 5).map(function (k) {
+    return "<div><dt>" + k[0] + "</dt><dd>" + k[1] + "</dd></div>";
+  }).join("") + "</dl>";
 
   /* جدول المعلومات */
   var facts = [
@@ -78,7 +78,7 @@ window.onSiteReady(function () {
   var factsHTML = '<dl class="facts">' + facts.map(function (f) { return "<div><dt>" + f[0] + "</dt><dd>" + f[1] + "</dd></div>"; }).join("") + "</dl>";
 
   var featuresHTML = (l.features || []).length
-    ? '<ul class="feature-list">' + l.features.map(function (f) { return "<li>" + i("check") + e(f) + "</li>"; }).join("") + "</ul>"
+    ? '<ul class="feature-list">' + l.features.map(function (f) { return "<li>" + e(f) + "</li>"; }).join("") + "</ul>"
     : "<p>لا توجد مزايا مسجّلة.</p>";
 
   var locText = S.locationLabel(l);
@@ -86,7 +86,7 @@ window.onSiteReady(function () {
   var mapURL = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(mapQuery);
 
   var waText = "مرحباً، أنا مهتم بالعقار رقم #" + l.id + " (" + l.title + " — " + locText + ")";
-  var pills = ['<span class="pill pill-brand">' + S.dealLabel(l.deal) + "</span>"];
+  var pills = [];
   if (l.negotiable) pills.push('<span class="pill">قابل للتفاوض</span>');
   if (l.furnished) pills.push('<span class="pill">مفروش</span>');
   if (l.ownership) pills.push('<span class="pill">' + e(l.ownership) + "</span>");
@@ -97,7 +97,7 @@ window.onSiteReady(function () {
         '<div class="agent"><span class="avatar" aria-hidden="true">' + e(S.initials(agent.name)) + "</span><div><strong>" + e(agent.name) + "</strong><span>" + e(agent.role) + "</span></div></div>" +
         '<div class="agent-actions">' +
           '<a class="btn btn-ghost" href="' + S.telLink(agent.phone) + '">' + i("phone") + "اتصال</a>" +
-          '<a class="btn btn-whatsapp" href="' + S.waLink(waText + "\nالوسيط: " + agent.name, agent.whatsapp) + '" target="_blank" rel="noopener">' + i("chat") + "واتساب</a>" +
+          '<a class="btn btn-ghost" href="' + S.waLink(waText + "\nالوسيط: " + agent.name, agent.whatsapp) + '" target="_blank" rel="noopener">' + i("chat") + "واتساب</a>" +
         "</div>" +
       "</div>"
     : "";
@@ -107,10 +107,10 @@ window.onSiteReady(function () {
   var govCrumb = g ? '<a href="properties.html?deal=' + l.deal + "&gov=" + g.id + '">' + g.name + "</a>" : "";
 
   root.innerHTML =
-    '<div class="container" style="padding-top:1.4rem">' +
+    '<div class="container prop-top">' +
       '<ol class="breadcrumb"><li><a href="index.html">الرئيسية</a></li><li>' + dealCrumb + "</li>" + (govCrumb ? "<li>" + govCrumb + "</li>" : "") + "<li>" + e(S.placeShort(l.place)) + "</li></ol>" +
       '<div class="prop-head">' +
-        "<div><h1>" + e(l.title) + '</h1><p class="card-loc">' + i("pin") + e(locText) + " · " + TYPES[l.type] + "</p></div>" +
+        "<div><h1>" + e(l.title) + '</h1><p class="prop-loc">' + e(locText) + " · " + TYPES[l.type] + " " + S.dealLabel(l.deal) + "</p></div>" +
         '<div class="prop-actions">' +
           '<button type="button" class="btn btn-ghost" id="share-btn">' + i("share") + "مشاركة</button>" +
         "</div>" +
@@ -120,24 +120,26 @@ window.onSiteReady(function () {
 
     '<div class="container prop-layout">' +
       '<div class="prop-main">' +
+        keyStrip +
         '<nav class="quick-nav" aria-label="أقسام الصفحة">' +
           '<a href="#about">عن العقار</a><a href="#details">المعلومات الأساسية</a><a href="#features">المزايا</a><a href="#location">الموقع</a><a href="#viewing">طلب معاينة</a>' +
         "</nav>" +
-        '<section class="prop-section" id="about"><h2>عن العقار</h2>' + keyStrip + '<p class="prop-desc">' + e(l.description) + "</p></section>" +
+        '<section class="prop-section" id="about"><h2>عن العقار</h2><p class="prop-desc">' + e(l.description) + "</p></section>" +
         '<section class="prop-section" id="details"><h2>المعلومات الأساسية</h2>' + factsHTML + "</section>" +
         '<section class="prop-section" id="features"><h2>المزايا والخدمات</h2>' + featuresHTML + "</section>" +
         '<section class="prop-section" id="location"><h2>الموقع</h2>' +
           '<div class="map-box"><div><strong>' + e(locText) + "</strong><p>يُرسَل العنوان الدقيق بعد تأكيد موعد المعاينة.</p></div>" +
-          '<a class="btn btn-ghost" href="' + mapURL + '" target="_blank" rel="noopener">' + i("compass") + "فتح المنطقة على الخريطة</a></div>" +
+          '<a class="text-link" href="' + mapURL + '" target="_blank" rel="noopener">فتح المنطقة على الخريطة</a></div>' +
         "</section>" +
       "</div>" +
 
       '<aside class="side">' +
         '<div class="side-card">' +
+          '<p class="price-label">' + (l.deal === "rent" ? "الإيجار المطلوب" : "السعر المطلوب") + "</p>" +
           '<div class="price-big">' + S.priceHTML(l) + "</div>" +
-          '<div class="price-meta">' + pills.join("") + "</div>" +
-          '<a class="btn btn-primary btn-block" href="#viewing">' + i("calendar") + "اطلب معاينة</a>" +
-          '<a class="btn btn-whatsapp btn-block" href="' + S.waLink(waText) + '" target="_blank" rel="noopener">' + i("chat") + "اسأل عن العقار عبر واتساب</a>" +
+          (pills.length ? '<div class="price-meta">' + pills.join("") + "</div>" : "") +
+          '<a class="btn btn-primary btn-block" href="#viewing">اطلب معاينة</a>' +
+          '<a class="btn btn-ghost btn-block" href="' + S.waLink(waText) + '" target="_blank" rel="noopener">' + i("chat") + "اسأل عبر واتساب</a>" +
         "</div>" +
         agentHTML +
         '<div class="side-card" id="viewing">' +
@@ -155,7 +157,7 @@ window.onSiteReady(function () {
     "</div>" +
 
     '<section class="section section-alt"><div class="container">' +
-      '<div class="section-head"><div><h2>عقارات مشابهة</h2></div><a class="link-arrow" href="properties.html?deal=' + l.deal + '">عرض المزيد ' + i("arrow") + "</a></div>" +
+      '<div class="section-head"><h2>عقارات مشابهة</h2><a class="text-link" href="properties.html?deal=' + l.deal + '">عرض المزيد</a></div>' +
       '<div class="cards cards-3" id="similar"></div>' +
     "</div></section>";
 

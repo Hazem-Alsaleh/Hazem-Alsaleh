@@ -211,3 +211,7 @@ table.data .c-date { white-space: nowrap; }
 .mail-failed { color: var(--heart); font-weight: 500; }
 .notice .icon { vertical-align: -0.2em; }
 .notice.ok { background: var(--brand-soft); color: var(--brand-text); }
+.sidebar .brand, .admin-topbar .brand { color: #fff; }
+.login-card .brand { color: var(--ink); }
+.panel h2, .panel-head h2, .modal-card h2, .login-card h1, .empty h3 { font-family: var(--font-body); font-weight: 600; }
+.login-card h1 { font-size: 1.3rem; }

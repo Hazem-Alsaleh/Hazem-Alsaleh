@@ -42,7 +42,7 @@
   function icon(n) {
     return '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + (ICONS[n] || "") + "</svg>";
   }
-  var BRAND_MARK = '<svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="9" fill="var(--brand)"/><path d="M12 31V19.5C12 13.5 16 10 20 7.5c4 2.5 8 6 8 12V31z" fill="none" stroke="var(--on-brand)" stroke-width="2.4" stroke-linejoin="round"/><path d="M17 31v-7a3 3 0 0 1 6 0v7" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linejoin="round"/></svg>';
+  var BRAND_MARK = '<svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><path d="M9 35V17.5C9 10.5 14.2 6 20 3c5.8 3 11 7.5 11 14.5V35" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M15.5 35v-9.5a4.5 4.5 0 0 1 9 0V35" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/><path d="M4 35h32" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {

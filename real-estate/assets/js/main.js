@@ -116,31 +116,33 @@
   }
 
   /* ---------- بطاقة عقار ---------- */
-  function cardHTML(l) {
-    var facts = [];
-    if (l.rooms) facts.push("<li>" + icon("bed") + roomsLabel(l.rooms) + "</li>");
-    if (l.baths) facts.push("<li>" + icon("bath") + l.baths + " حمام</li>");
-    facts.push("<li>" + icon("area") + '<bdi>' + fmtNum(l.size) + "</bdi> م²</li>");
+  /* سطر المواصفات المختصر: «شقة · 165 م² · 3 غرف» */
+  function metaLine(l) {
+    var parts = [TYPES[l.type], '<bdi>' + fmtNum(l.size) + "</bdi> م²"];
+    if (l.rooms) parts.push(roomsLabel(l.rooms));
+    if (l.furnished) parts.push("مفروش");
+    return parts.join(" · ");
+  }
+  function cardHTML(l, showDeal) {
     var href = "property.html?id=" + l.id;
     return (
       '<article class="card">' +
         '<a class="card-media" href="' + href + '" tabindex="-1" aria-hidden="true">' +
-          '<img loading="lazy" src="' + img(l.images[0]) + '" alt="" width="600" height="400">' +
-          '<span class="badge ' + (l.deal === "rent" ? "badge-rent" : "badge-sale") + '">' + dealLabel(l.deal) + "</span>" +
-          (l.images.length > 1 ? '<span class="photo-count">' + icon("camera") + l.images.length + "</span>" : "") +
+          '<img loading="lazy" src="' + img(l.images[0]) + '" alt="" width="600" height="450">' +
+          (showDeal ? '<span class="badge">' + dealLabel(l.deal) + "</span>" : "") +
         "</a>" +
         '<div class="card-body">' +
-          '<p class="card-loc">' + icon("pin") + esc(locationLabel(l)) + "</p>" +
+          '<p class="card-loc">' + esc(locationLabel(l)) + "</p>" +
           '<h3 class="card-title"><a href="' + href + '">' + esc(l.title) + "</a></h3>" +
+          '<p class="card-meta">' + metaLine(l) + "</p>" +
           '<p class="card-price">' + priceHTML(l) + "</p>" +
-          '<ul class="card-facts">' + facts.join("") + "</ul>" +
-          '<p class="card-type">' + esc(TYPES[l.type]) + (l.ownership ? " · " + esc(l.ownership) : "") + (l.furnished ? " · مفروش" : "") + "</p>" +
         "</div>" +
       "</article>"
     );
   }
-  function renderCards(container, list) {
-    container.innerHTML = list.map(cardHTML).join("");
+  /* showDeal: vis «للبيع/للإيجار» på bildet bare når listen blander salg og leie */
+  function renderCards(container, list, showDeal) {
+    container.innerHTML = list.map(function (l) { return cardHTML(l, !!showDeal); }).join("");
   }
 
   /* ---------- قوائم المحافظات والمدن ---------- */
@@ -230,9 +232,9 @@
   /* ---------- الترويسة والتذييل ---------- */
   var BRAND_MARK =
     '<svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">' +
-      '<rect width="40" height="40" rx="9" fill="var(--brand)"/>' +
-      '<path d="M12 31V19.5C12 13.5 16 10 20 7.5c4 2.5 8 6 8 12V31z" fill="none" stroke="var(--on-brand)" stroke-width="2.4" stroke-linejoin="round"/>' +
-      '<path d="M17 31v-7a3 3 0 0 1 6 0v7" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linejoin="round"/>' +
+      '<path d="M9 35V17.5C9 10.5 14.2 6 20 3c5.8 3 11 7.5 11 14.5V35" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>' +
+      '<path d="M15.5 35v-9.5a4.5 4.5 0 0 1 9 0V35" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linejoin="round"/>' +
+      '<path d="M4 35h32" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' +
     "</svg>";
 
   var NAV = [
@@ -273,10 +275,10 @@
           NAV.map(function (n) {
             return '<li><a href="' + n.href + '"' + (n.key === active ? ' aria-current="page"' : "") + ">" + n.label + "</a></li>";
           }).join("") +
-          '<li class="nav-cta-mobile"><a class="btn btn-accent" href="sell.html#valuation">تقييم مجاني لعقارك</a></li>' +
+          '<li class="nav-cta-mobile"><a class="btn btn-primary" href="sell.html#valuation">تقييم مجاني لعقارك</a></li>' +
         "</ul></nav>" +
         '<div class="header-actions">' +
-          '<a class="btn btn-accent header-cta" href="sell.html#valuation">تقييم مجاني</a>' +
+          '<a class="btn btn-ghost header-cta" href="sell.html#valuation">تقييم مجاني لعقارك</a>' +
           '<button type="button" class="icon-btn menu-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="فتح القائمة">' + icon("menu") + "</button>" +
         "</div>" +
       "</div></header>";
@@ -308,7 +310,6 @@
 
     host.innerHTML =
       '<footer class="site-footer">' +
-        '<div class="footer-pattern" aria-hidden="true"></div>' +
         '<div class="container footer-grid">' +
           '<div class="footer-about">' +
             '<a class="brand brand-light" href="index.html">' + BRAND_MARK +

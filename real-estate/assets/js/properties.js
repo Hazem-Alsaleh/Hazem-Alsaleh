@@ -161,7 +161,7 @@ window.onSiteReady(function () {
   function update() {
     var f = collect();
     var out = L.filter(function (l) { return matches(l, f); }).sort(sorters[f.sort] || sorters["new"]);
-    S.renderCards(results, out);
+    S.renderCards(results, out, !f.deal);
     empty.hidden = out.length > 0;
     results.hidden = out.length === 0;
     var n = out.length;

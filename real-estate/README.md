@@ -119,4 +119,15 @@ Testene sjekker blant annet:
 
 ## Eksempeldata og bilder
 
-Alle boliger og meglernavn i startdataene er eksempler. Bildene i `assets/img/` er stockbilder fra Unsplash (fri bruk). Bytt dem ut med ekte boliger i panelet. Slå deretter av merknaden «eksempler» under Innstillinger.
+Alle boliger og meglernavn i startdataene er eksempler. Bytt dem ut med ekte boliger i panelet. Slå deretter av merknaden «eksempler» under Innstillinger.
+
+Bildene er fra Unsplash og kan brukes fritt etter Unsplash-lisensen:
+
+| Fil | Brukes i | Fotograf |
+| --- | --- | --- |
+| `site-damascus-courtyard.jpg` | Hovedbildet på forsiden (Qasr al-Azem, Damaskus) | Laila H |
+| `site-syria-facade.jpg` | Verdivurdering på forsiden | Ghazal Magh |
+| `site-aleppo-alley.jpg` | «Selg eller lei ut»-siden (gamlebyen i Aleppo) | Fadi Alagi |
+| Øvrige bilder i `assets/img/` | Eksempelboligene | Ulike fotografer på Unsplash |
+
+Bildene av eksempelboligene er generelle stockbilder og skal byttes ut med bilder av de ekte boligene.

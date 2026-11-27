@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>عقارات للبيع والإيجار | اسم الشركة</title>
+<meta name="description" content="ابحث عن شقق وبيوت وفيلات وأراضٍ ومحلات للبيع والإيجار في كل المحافظات السورية.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="properties">
+<div id="site-header"></div>
+
+<main>
+  <section class="page-head">
+    <div class="container">
+      <ol class="breadcrumb">
+        <li><a href="index.html">الرئيسية</a></li>
+        <li id="bc-current">العقارات</li>
+      </ol>
+      <h1 id="ph-title">العقارات</h1>
+      <p class="lead" id="ph-lead">استخدم التصفية لتجد العقار المناسب حسب المحافظة والمدينة والسعر وعدد الغرف.</p>
+      <div class="deal-tabs" role="tablist" aria-label="نوع العرض">
+        <button type="button" role="tab" data-deal="" aria-selected="true">الكل</button>
+        <button type="button" role="tab" data-deal="sale" aria-selected="false">للبيع</button>
+        <button type="button" role="tab" data-deal="rent" aria-selected="false">للإيجار</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="container listing-layout">
+    <aside class="filters" id="filters" aria-label="تصفية النتائج">
+      <div class="filters-head">
+        <h2>تصفية النتائج</h2>
+        <button type="button" class="icon-btn filters-close" id="filter-close" aria-label="إغلاق التصفية">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <form id="filter-form" class="filters-form">
+        <div class="field">
+          <label for="f-q">بحث بالكلمات</label>
+          <input id="f-q" name="q" type="search" placeholder="مثال: إطلالة بحرية، مسبح">
+        </div>
+        <div class="field">
+          <label for="f-gov">المحافظة</label>
+          <select id="f-gov" name="gov"></select>
+        </div>
+        <div class="field">
+          <label for="f-place" id="f-place-label">المدينة / الحي</label>
+          <select id="f-place" name="place"></select>
+        </div>
+        <fieldset class="fieldset">
+          <legend>نوع العقار</legend>
+          <div class="check-list" id="f-types"></div>
+        </fieldset>
+        <div class="field">
+          <span class="label" id="f-price-label">السعر ($)</span>
+          <div class="range">
+            <input id="f-pmin" name="pmin" type="number" min="0" step="any" inputmode="numeric" placeholder="من" aria-label="أقل سعر" dir="ltr">
+            <input id="f-pmax" name="pmax" type="number" min="0" step="any" inputmode="numeric" placeholder="إلى" aria-label="أعلى سعر" dir="ltr">
+          </div>
+        </div>
+        <fieldset class="fieldset">
+          <legend>عدد الغرف</legend>
+          <div class="choice-row">
+            <label class="choice"><input type="radio" name="rooms" value="" checked><span>الكل</span></label>
+            <label class="choice"><input type="radio" name="rooms" value="1"><span>+1</span></label>
+            <label class="choice"><input type="radio" name="rooms" value="2"><span>+2</span></label>
+            <label class="choice"><input type="radio" name="rooms" value="3"><span>+3</span></label>
+            <label class="choice"><input type="radio" name="rooms" value="4"><span>+4</span></label>
+          </div>
+        </fieldset>
+        <div class="field">
+          <span class="label">المساحة (م²)</span>
+          <div class="range">
+            <input id="f-smin" name="smin" type="number" min="0" inputmode="numeric" placeholder="من" aria-label="أقل مساحة" dir="ltr">
+            <input id="f-smax" name="smax" type="number" min="0" inputmode="numeric" placeholder="إلى" aria-label="أكبر مساحة" dir="ltr">
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-own">نوع الملكية</label>
+          <select id="f-own" name="own"></select>
+        </div>
+        <div class="field">
+          <label for="f-finish">الإكساء</label>
+          <select id="f-finish" name="finish"></select>
+        </div>
+        <div class="check-list">
+          <label><input type="checkbox" id="f-furnished" name="furnished" value="1"> مفروش فقط</label>
+          <label><input type="checkbox" id="f-fav" name="fav" value="1"> المحفوظة في المفضلة فقط</label>
+        </div>
+        <div style="display:grid; gap:0.5rem">
+          <button type="button" class="btn btn-primary" id="filter-apply">عرض النتائج</button>
+          <button type="button" class="btn btn-ghost" id="filter-reset">مسح كل التصفيات</button>
+        </div>
+      </form>
+    </aside>
+
+    <section class="results" aria-live="polite">
+      <div class="results-bar">
+        <p class="results-count" id="results-count"></p>
+        <div class="results-tools">
+          <button type="button" class="btn btn-ghost filter-toggle" id="filter-open" aria-controls="filters">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+            تصفية
+          </button>
+          <div class="field">
+            <label for="sort">ترتيب</label>
+            <select id="sort">
+              <option value="new">الأحدث</option>
+              <option value="price-asc">السعر: من الأقل</option>
+              <option value="price-desc">السعر: من الأعلى</option>
+              <option value="size-desc">المساحة: الأكبر أولاً</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="chips" id="chips"></div>
+      <div class="cards" id="results"></div>
+      <div class="empty-state" id="empty" hidden>
+        <h3>لا توجد عقارات تطابق بحثك حالياً</h3>
+        <p>جرّب توسيع نطاق السعر أو اختيار محافظة أخرى، أو اترك طلبك وسنبلغك عند توفر عقار مناسب.</p>
+        <div class="cta-actions">
+          <button type="button" class="btn btn-ghost" id="empty-reset">مسح التصفيات</button>
+          <a class="btn btn-primary" href="contact.html">أخبرنا بما تبحث عنه</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/locations.js"></script>
+<script src="assets/js/listings.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/properties.js"></script>
+</body>
+</html>

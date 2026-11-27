@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>اتصل بنا | اسم الشركة</title>
+<meta name="description" content="تواصل معنا هاتفياً أو عبر واتساب أو زر أحد مكاتبنا.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="contact">
+<div id="site-header"></div>
+
+<main>
+  <section class="page-head page-head-pad">
+    <div class="container">
+      <ol class="breadcrumb">
+        <li><a href="index.html">الرئيسية</a></li>
+        <li>اتصل بنا</li>
+      </ol>
+      <h1>اتصل بنا</h1>
+      <p class="lead">نرد على الاتصالات ورسائل واتساب خلال ساعات العمل، وعادةً خلال ساعة واحدة.</p>
+      <div class="cta-actions mt-1">
+        <a class="btn btn-primary" data-tel href="#"><bdi dir="ltr" data-phone></bdi></a>
+        <a class="btn btn-whatsapp" data-whatsapp="مرحباً، لدي استفسار" href="#" target="_blank" rel="noopener">راسلنا على واتساب</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head"><div><h2>مكاتبنا</h2></div></div>
+      <div class="offices" id="offices"></div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container form-layout">
+      <aside>
+        <span class="eyebrow">راسلنا</span>
+        <h2>كيف يمكننا مساعدتك؟</h2>
+        <p>أخبرنا إن كنت تبحث عن عقار للشراء أو الإيجار، أو تريد بيع عقارك أو تأجيره. سيتواصل معك الوسيط المسؤول عن محافظتك.</p>
+      </aside>
+      <div class="form-card">
+        <form id="contact-form" class="form-grid" novalidate>
+          <div class="field">
+            <label for="c-name">الاسم</label>
+            <input id="c-name" name="name" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="c-phone">رقم الهاتف</label>
+            <input id="c-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="09xx xxx xxx" required>
+          </div>
+          <div class="field">
+            <label for="c-topic">الموضوع</label>
+            <select id="c-topic" name="topic" required>
+              <option value="">اختر الموضوع</option>
+              <option>أبحث عن عقار للشراء</option>
+              <option>أبحث عن عقار للإيجار</option>
+              <option>أريد بيع عقاري</option>
+              <option>أريد تأجير عقاري</option>
+              <option>أريد الانضمام كوسيط</option>
+              <option>استفسار آخر</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="c-gov">المحافظة</label>
+            <select id="c-gov" name="gov"></select>
+          </div>
+          <div class="field span-2">
+            <label for="c-email">البريد الإلكتروني (اختياري)</label>
+            <input id="c-email" name="email" type="email" autocomplete="email" dir="ltr">
+          </div>
+          <div class="field span-2">
+            <label for="c-msg">رسالتك</label>
+            <textarea id="c-msg" name="msg" rows="5" required placeholder="مثال: أبحث عن شقة 3 غرف في المزة بميزانية حتى 200 ألف دولار"></textarea>
+          </div>
+          <div class="span-2">
+            <button class="btn btn-accent btn-block" type="submit">أرسل الرسالة</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/locations.js"></script>
+<script src="assets/js/listings.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/pages.js"></script>
+</body>
+</html>

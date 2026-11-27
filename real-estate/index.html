@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>اسم الشركة للعقارات</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="شقق وبيوت عربية وفيلات وأراضٍ للبيع والإيجار في كل المحافظات السورية، مع تقييم مجاني لعقارك.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="home">
+<div id="site-header"></div>
+
+<main>
+  <section class="hero">
+    <div class="container hero-inner">
+      <h1>ابحث عن بيتك القادم في سوريا</h1>
+      <p class="hero-lead">شقق وبيوت عربية وفيلات وأراضٍ للبيع والإيجار، من دمشق وريفها إلى حلب والساحل والجزيرة، مع وسطاء محليين يعرفون كل حي.</p>
+
+      <form class="search-panel" id="hero-search" role="search" action="properties.html">
+        <div class="deal-tabs" role="tablist" aria-label="نوع العرض">
+          <button type="button" role="tab" id="tab-sale" aria-selected="true" data-deal="sale">للبيع</button>
+          <button type="button" role="tab" id="tab-rent" aria-selected="false" data-deal="rent">للإيجار</button>
+        </div>
+        <input type="hidden" name="deal" id="hs-deal" value="sale">
+        <div class="search-grid">
+          <div class="field">
+            <label for="hs-gov">المحافظة</label>
+            <select id="hs-gov" name="gov"></select>
+          </div>
+          <div class="field">
+            <label for="hs-place" id="hs-place-label">المدينة / الحي</label>
+            <select id="hs-place" name="place"></select>
+          </div>
+          <div class="field">
+            <label for="hs-type">نوع العقار</label>
+            <select id="hs-type" name="type"></select>
+          </div>
+          <button class="btn btn-primary" type="submit" id="hs-submit">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <span>ابحث</span>
+          </button>
+        </div>
+        <p class="quick-links">
+          <span>بحث سريع:</span>
+          <a href="properties.html?deal=sale&amp;gov=damascus&amp;type=apartment">شقق للبيع في دمشق</a>
+          <a href="properties.html?deal=rent&amp;furnished=1">شقق مفروشة للإيجار</a>
+          <a href="properties.html?type=arabic-house">بيوت عربية</a>
+          <a href="properties.html?gov=latakia">عقارات في اللاذقية</a>
+        </p>
+      </form>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="doors">
+        <a class="door" href="properties.html?deal=sale">
+          <img src="assets/img/villa-4.jpg" alt="" loading="lazy">
+          <h3>أريد أن أشتري</h3>
+          <p>شقق وفيلات وأراضٍ للبيع بأسعار واضحة وأوراق ملكية موثّقة.</p>
+          <span class="link-arrow">تصفّح العقارات للبيع <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></span>
+        </a>
+        <a class="door" href="properties.html?deal=rent">
+          <img src="assets/img/living-4.jpg" alt="" loading="lazy">
+          <h3>أريد أن أستأجر</h3>
+          <p>شقق مفروشة وغير مفروشة، إيجار شهري أو سنوي في كل المحافظات.</p>
+          <span class="link-arrow">تصفّح العقارات للإيجار <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></span>
+        </a>
+        <a class="door" href="sell.html">
+          <img src="assets/img/house-1.jpg" alt="" loading="lazy">
+          <h3>أريد أن أبيع أو أؤجّر</h3>
+          <p>تقييم مجاني لعقارك، ثم تسويق ومعاينات حتى توقيع العقد.</p>
+          <span class="link-arrow">اعرض عقارك معنا <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">للبيع</span>
+          <h2>عقارات مختارة للبيع</h2>
+          <p>أحدث العقارات التي أضافها وسطاؤنا هذا الأسبوع.</p>
+        </div>
+        <a class="link-arrow" href="properties.html?deal=sale">كل العقارات للبيع <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></a>
+      </div>
+      <div class="cards cards-3" id="featured-sale"></div>
+    </div>
+  </section>
+
+  <section class="band" id="valuation-band">
+    <div class="container band-inner">
+      <div>
+        <span class="eyebrow" style="color: var(--accent)">تقييم مجاني</span>
+        <h2>كم يساوي عقارك اليوم؟</h2>
+        <p>يزورك وسيط من منطقتك ويقدّر سعر عقارك بناءً على أسعار البيع والإيجار الفعلية في الحي، دون أي التزام منك.</p>
+        <ul class="band-list">
+          <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m5 12 4.5 4.5L19 7"/></svg><span>تقدير للسعر خلال 48 ساعة من المعاينة</span></li>
+          <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m5 12 4.5 4.5L19 7"/></svg><span>نصائح لرفع قيمة العقار قبل عرضه</span></li>
+          <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m5 12 4.5 4.5L19 7"/></svg><span>مجاناً سواء قررت البيع أو التأجير أو لا</span></li>
+        </ul>
+      </div>
+      <div class="band-form">
+        <h3>اطلب تقييماً مجانياً</h3>
+        <form id="quick-valuation" class="form-grid" novalidate>
+          <div class="field">
+            <label for="qv-gov">المحافظة</label>
+            <select id="qv-gov" name="gov" required></select>
+          </div>
+          <div class="field">
+            <label for="qv-type">نوع العقار</label>
+            <select id="qv-type" name="type" required></select>
+          </div>
+          <div class="field">
+            <label for="qv-name">الاسم</label>
+            <input id="qv-name" name="name" type="text" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="qv-phone">رقم الهاتف</label>
+            <input id="qv-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="09xx xxx xxx" required>
+          </div>
+          <div class="span-2">
+            <button class="btn btn-accent btn-block" type="submit">أرسل الطلب</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">للإيجار</span>
+          <h2>عقارات للإيجار</h2>
+          <p>شقق مفروشة وبيوت ومكاتب جاهزة للسكن أو العمل.</p>
+        </div>
+        <a class="link-arrow" href="properties.html?deal=rent">كل العقارات للإيجار <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></a>
+      </div>
+      <div class="cards cards-3" id="featured-rent"></div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">المحافظات</span>
+          <h2>ابحث حسب المحافظة</h2>
+          <p>نغطي المحافظات السورية الأربع عشرة، ولدينا وسطاء يعرفون أسعار كل منطقة.</p>
+        </div>
+      </div>
+      <div class="gov-grid" id="gov-grid"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">بيع عقارك</span>
+          <h2>كيف نبيع عقارك؟</h2>
+          <p>خمس مراحل واضحة من أول اتصال حتى نقل الملكية.</p>
+        </div>
+        <a class="btn btn-primary" href="sell.html">ابدأ الآن</a>
+      </div>
+      <ol class="steps">
+        <li class="step"><h3>تقييم مجاني</h3><p>يعاين الوسيط عقارك ويقدّر سعره بناءً على صفقات حقيقية في الحي نفسه.</p></li>
+        <li class="step"><h3>تجهيز الأوراق</h3><p>نراجع معك سند الملكية والبيان العقاري وبراءات الذمة قبل العرض.</p></li>
+        <li class="step"><h3>تصوير وتسويق</h3><p>صور احترافية وإعلان على موقعنا وصفحاتنا وقائمة المشترين لدينا.</p></li>
+        <li class="step"><h3>معاينات وتفاوض</h3><p>ننظّم المعاينات مع مشترين جادّين ونتفاوض لتحصل على أفضل سعر.</p></li>
+        <li class="step"><h3>العقد والفراغ</h3><p>نرافقك حتى توقيع العقد وإتمام الفراغ في السجل العقاري.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">دليل العقار</span>
+          <h2>معلومات تهمّك قبل البيع أو الشراء أو الإيجار</h2>
+        </div>
+      </div>
+      <div class="guide">
+        <details>
+          <summary>ما الفرق بين الطابو الأخضر وحكم المحكمة؟</summary>
+          <div>
+            <p><strong>الطابو الأخضر:</strong> سند ملكية مسجّل في السجل العقاري، وهو أقوى أشكال إثبات الملكية وأسهلها في البيع.</p>
+            <p><strong>حكم المحكمة:</strong> ملكية مثبتة بحكم قضائي، ويُفضَّل تثبيتها لاحقاً في السجل العقاري.</p>
+            <p><strong>وكالة كاتب بالعدل:</strong> وكالة بيع غير قابلة للعزل، تُستخدم غالباً في العقارات التي لم يكتمل فرزها.</p>
+            <p>اطلب دائماً بياناً عقارياً حديثاً قبل دفع أي عربون.</p>
+          </div>
+        </details>
+        <details>
+          <summary>ما الأوراق المطلوبة لبيع عقار؟</summary>
+          <div>
+            <ul>
+              <li>سند الملكية أو بيان عقاري حديث</li>
+              <li>الهوية الشخصية للمالك، أو وكالة قانونية سارية</li>
+              <li>براءات الذمة المطلوبة (المالية، الكهرباء، المياه)</li>
+              <li>مخطط المساحة أو رخصة البناء إن وجدت</li>
+            </ul>
+            <p>قد تختلف المتطلبات بين المحافظات، ويتابع وسيطنا الإجراءات معك خطوة بخطوة.</p>
+          </div>
+        </details>
+        <details>
+          <summary>نصائح قبل توقيع عقد الإيجار</summary>
+          <div>
+            <ul>
+              <li>عاين العقار نهاراً وتأكد من الماء والكهرباء والأمبيرات والطاقة الشمسية</li>
+              <li>اتفق كتابياً على مدة العقد والدفعة المقدمة والتأمين</li>
+              <li>وثّق العقد رسمياً لدى الجهة المختصة</li>
+              <li>صوّر حالة العقار والأثاث يوم الاستلام</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="cta-strip">
+        <div>
+          <h2>تملك عقاراً تريد بيعه أو تأجيره؟</h2>
+          <p>أرسل لنا التفاصيل وسيتصل بك وسيط من منطقتك خلال يوم عمل.</p>
+        </div>
+        <div class="cta-actions">
+          <a class="btn btn-primary" href="sell.html">اعرض عقارك</a>
+          <a class="btn btn-whatsapp" data-whatsapp="مرحباً، أريد عرض عقاري للبيع أو الإيجار" href="#" target="_blank" rel="noopener">تواصل عبر واتساب</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/locations.js"></script>
+<script src="assets/js/listings.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/home.js"></script>
+</body>
+</html>

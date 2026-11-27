@@ -297,12 +297,10 @@
     var host = document.getElementById("site-footer");
     if (!host) return;
     var year = new Date().getFullYear();
-    var govLinks = GOVS.slice(0, 7).map(function (g) {
-      return '<li><a href="properties.html?gov=' + g.id + '">عقارات في ' + g.name + "</a></li>";
+    var govLinks = GOVS.map(function (g) {
+      return '<li><a href="properties.html?gov=' + g.id + '">' + g.name + "</a></li>";
     }).join("");
-    var govLinks2 = GOVS.slice(7).map(function (g) {
-      return '<li><a href="properties.html?gov=' + g.id + '">عقارات في ' + g.name + "</a></li>";
-    }).join("");
+    var govLinks2 = "";
     var social = [];
     if (C.social.facebook) social.push('<a href="' + esc(C.social.facebook) + '" target="_blank" rel="noopener">فيسبوك</a>');
     if (C.social.instagram) social.push('<a href="' + esc(C.social.instagram) + '" target="_blank" rel="noopener">إنستغرام</a>');

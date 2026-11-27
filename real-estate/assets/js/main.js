@@ -64,12 +64,94 @@
     if (p === gName) return "مدينة " + gName;
     return p + "، " + gName;
   }
-  function priceHTML(l) {
-    var amount = l.currency === "SYP" ? fmtNum(l.price) + " ل.س" : "$" + fmtNum(l.price);
-    var per = "";
-    if (l.deal === "rent") per = '<span class="per">/ ' + (l.rentPeriod === "year" ? "سنوياً" : "شهرياً") + "</span>";
-    return '<bdi class="amount">' + amount + "</bdi>" + per;
+  /* ---------- العملات: الدولار والليرة السورية ----------
+   * كل عقار له سعر بعملته الأصلية. إذا ضُبط سعر الصرف (usdRate) يستطيع الزائر
+   * عرض كل الأسعار بالدولار أو بالليرة، والمبالغ المحوّلة تظهر مع علامة ≈.
+   */
+  var CUR_KEY = "aqar-currency";
+  var curOverride = null;
+  function usdRate() { var r = Number(C.usdRate); return r > 0 ? r : 0; }
+  function curOf(l) { return l.currency === "SYP" ? "SYP" : "USD"; }
+  function displayCurrency() {
+    if (!usdRate()) return null;
+    var saved = curOverride;
+    if (!saved) { try { saved = localStorage.getItem(CUR_KEY); } catch (e) { saved = null; } }
+    if (saved === "USD" || saved === "SYP") return saved;
+    return C.displayCurrency === "SYP" ? "SYP" : "USD";
   }
+  function convert(amount, from, to) {
+    if (from === to) return amount;
+    var r = usdRate();
+    if (!r) return null;
+    return from === "USD" ? amount * r : amount / r;
+  }
+  function niceRound(n) {
+    if (n >= 100000) return Math.round(n / 1000) * 1000;
+    if (n >= 1000) return Math.round(n / 10) * 10;
+    return Math.round(n);
+  }
+  function fmtMoney(n, cur) { return cur === "SYP" ? fmtNum(n) + " ل.س" : "$" + fmtNum(n); }
+  function curLabel(cur) { return cur === "SYP" ? "ل.س" : "$"; }
+  /* السعر بالعملة المطلوبة (أو بعملة العرض الحالية): { amount, cur, approx } */
+  function priceIn(l, cur) {
+    var from = curOf(l);
+    var target = cur || displayCurrency() || from;
+    var v = convert(l.price, from, target);
+    if (v == null) return { amount: l.price, cur: from, approx: false };
+    return { amount: target === from ? v : niceRound(v), cur: target, approx: target !== from };
+  }
+  function perLabel(l) {
+    return l.deal === "rent" ? '<span class="per">/ ' + (l.rentPeriod === "year" ? "سنوياً" : "شهرياً") + "</span>" : "";
+  }
+  function priceHTML(l) {
+    var p = priceIn(l);
+    return '<bdi class="amount">' + (p.approx ? "≈ " : "") + fmtMoney(p.amount, p.cur) + "</bdi>" + perLabel(l);
+  }
+  /* سطر ثانٍ في صفحة العقار: السعر المعلن أو ما يعادله بالعملة الأخرى */
+  function priceAltHTML(l) {
+    if (!usdRate()) return "";
+    var shown = priceIn(l);
+    if (shown.approx) return "السعر المعلن: <bdi>" + fmtMoney(l.price, curOf(l)) + "</bdi>";
+    var other = priceIn(l, curOf(l) === "USD" ? "SYP" : "USD");
+    return "يعادل تقريباً <bdi>" + fmtMoney(other.amount, other.cur) + "</bdi>" + (other.cur === "SYP" ? " (ليرة سورية)" : "");
+  }
+  function rateNote() {
+    if (!usdRate()) return "";
+    var d = C.rateUpdatedAt ? String(C.rateUpdatedAt).slice(0, 10).split("-") : null;
+    var MONTHS = ["كانون الثاني", "شباط", "آذار", "نيسان", "أيار", "حزيران", "تموز", "آب", "أيلول", "تشرين الأول", "تشرين الثاني", "كانون الأول"];
+    return "حسب سعر الصرف المعتمد: <bdi>$1 = " + fmtNum(usdRate()) + " ل.س</bdi>" +
+      (d && d.length === 3 ? " (" + Number(d[2]) + " " + MONTHS[Number(d[1]) - 1] + " " + d[0] + ")" : "");
+  }
+  function refreshPrices() {
+    document.querySelectorAll("[data-price-of]").forEach(function (el) {
+      var l = findListing(el.getAttribute("data-price-of"));
+      if (l) el.innerHTML = priceHTML(l);
+    });
+    document.querySelectorAll("[data-price-alt-of]").forEach(function (el) {
+      var l = findListing(el.getAttribute("data-price-alt-of"));
+      if (l) el.innerHTML = priceAltHTML(l);
+    });
+  }
+  function syncCurrencySwitch() {
+    var cur = displayCurrency();
+    document.querySelectorAll("[data-cur]").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-cur") === cur ? "true" : "false");
+    });
+  }
+  function setDisplayCurrency(cur) {
+    var from = displayCurrency();
+    if (cur === from) return;
+    curOverride = cur;
+    try { localStorage.setItem(CUR_KEY, cur); } catch (e) { /* التخزين غير متاح */ }
+    syncCurrencySwitch();
+    refreshPrices();
+    document.dispatchEvent(new CustomEvent("currency-changed", { detail: { from: from, to: cur } }));
+    toast(cur === "SYP" ? "تُعرض الأسعار الآن بالليرة السورية" : "تُعرض الأسعار الآن بالدولار");
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-cur]");
+    if (b) setDisplayCurrency(b.getAttribute("data-cur"));
+  });
   function priceText(l) {
     var amount = l.currency === "SYP" ? fmtNum(l.price) + " ل.س" : "$" + fmtNum(l.price);
     if (l.deal === "rent") amount += " " + (l.rentPeriod === "year" ? "سنوياً" : "شهرياً");
@@ -172,7 +254,7 @@
         '<div class="card-body">' +
           '<p class="card-loc">' + icon("pin") + esc(locationLabel(l)) + "</p>" +
           '<h3 class="card-title"><a href="' + href + '">' + esc(l.title) + "</a></h3>" +
-          '<p class="card-price">' + priceHTML(l) + "</p>" +
+          '<p class="card-price" data-price-of="' + l.id + '">' + priceHTML(l) + "</p>" +
           '<ul class="card-facts">' + facts.join("") + "</ul>" +
           '<p class="card-type">' + esc(TYPES[l.type]) + (l.ownership ? " · " + esc(l.ownership) : "") + (l.furnished ? " · مفروش" : "") + "</p>" +
         "</div>" +
@@ -317,6 +399,8 @@
           '<li class="nav-cta-mobile"><a class="btn btn-accent" href="sell.html#valuation">تقييم مجاني لعقارك</a></li>' +
         "</ul></nav>" +
         '<div class="header-actions">' +
+          (usdRate() ? '<div class="cur-switch" role="group" aria-label="عملة عرض الأسعار" title="سعر الصرف: $1 = ' + fmtNum(usdRate()) + ' ل.س">' +
+            '<button type="button" data-cur="USD" aria-pressed="false">$</button><button type="button" data-cur="SYP" aria-pressed="false">ل.س</button></div>' : "") +
           '<a class="icon-btn" href="properties.html?fav=1" aria-label="العقارات المحفوظة">' + icon("heart") + '<span class="fav-count" hidden></span></a>' +
           '<a class="btn btn-accent header-cta" href="sell.html#valuation">تقييم مجاني</a>' +
           '<button type="button" class="icon-btn menu-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="فتح القائمة">' + icon("menu") + "</button>" +
@@ -398,6 +482,7 @@
     renderFooter();
     applyCompanyName();
     syncFavUI();
+    syncCurrencySwitch();
     isReady = true;
     readyQueue.forEach(function (fn) { fn(); });
     readyQueue = [];
@@ -407,6 +492,8 @@
   window.SITE = {
     icon: icon, esc: esc, fmtNum: fmtNum, govById: govById, govName: govName, placeShort: placeShort,
     locationLabel: locationLabel, priceHTML: priceHTML, priceText: priceText, dealLabel: dealLabel,
+    priceAltHTML: priceAltHTML, rateNote: rateNote, usdRate: usdRate, displayCurrency: displayCurrency,
+    convert: convert, niceRound: niceRound, fmtMoney: fmtMoney, curLabel: curLabel, curOf: curOf,
     roomsLabel: roomsLabel, img: img, findListing: findListing, agentById: agentById, initials: initials,
     waLink: waLink, telLink: telLink, getFavs: getFavs, isFav: isFav, toggleFav: toggleFav, syncFavUI: syncFavUI,
     toast: toast, cardHTML: cardHTML, renderCards: renderCards, fillGovSelect: fillGovSelect,

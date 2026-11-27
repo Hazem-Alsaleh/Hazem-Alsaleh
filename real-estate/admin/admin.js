@@ -72,6 +72,11 @@
     if (l.deal === "rent") a += l.rentPeriod === "year" ? " سنوياً" : " شهرياً";
     return a;
   }
+  function rateInfo() {
+    var s = state.settings;
+    if (!(Number(s.usdRate) > 0)) return "لم يُضبط سعر صرف، لذلك تظهر أسعار العقارات بعملتها الأصلية فقط ولا يظهر زر التبديل.";
+    return "السعر الحالي: $1 = " + fmtNum(s.usdRate) + " ل.س" + (s.rateUpdatedAt ? " — آخر تحديث " + fmtDate(s.rateUpdatedAt) : "") + ".";
+  }
   function imgSrc(p) { return p.indexOf("/") !== -1 ? "../" + p : "../assets/img/" + p + ".jpg"; }
   function initials(name) {
     var parts = String(name || "").trim().split(/\s+/);
@@ -340,6 +345,8 @@
     if (!s.companyName || s.companyName === "اسم الشركة") todo.push(["اكتب الاسم النهائي للشركة", "#/settings"]);
     if (s.phone === "+963 11 000 0000" || s.whatsapp === "963900000000") todo.push(["أدخل رقم الهاتف ورقم واتساب الحقيقيين", "#/settings"]);
     if (s.email === "info@example.com") todo.push(["أدخل البريد الإلكتروني للشركة", "#/settings"]);
+    if (!(Number(s.usdRate) > 0)) todo.push(["أدخل سعر صرف الدولار ليتمكن الزوار من رؤية الأسعار بالليرة السورية", "#/settings"]);
+    else if (s.rateUpdatedAt && Date.now() - new Date(s.rateUpdatedAt).getTime() > 7 * 864e5) todo.push(["حدّث سعر صرف الدولار (آخر تحديث " + fmtDate(s.rateUpdatedAt) + ")", "#/settings"]);
     if (!s.notifyEnabled) todo.push(["فعّل إشعارات البريد لتصلك الطلبات الجديدة فور وصولها", "#/settings"]);
     else if (!state.notify.configured) todo.push(["إشعارات البريد مفعّلة لكن خادم البريد (SMTP) غير مضبوط على الخادم", "#/settings"]);
     if (s.showSampleNotice) todo.push(["استبدل العقارات والوسطاء التجريبيين بالحقيقيين، ثم ألغِ ملاحظة «أمثلة توضيحية» من الإعدادات", "#/listings"]);
@@ -527,7 +534,8 @@
 
           '<section class="panel"><h2>السعر</h2><div class="form-grid">' +
             field("price", '<span id="price-label">' + (l.deal === "rent" ? "قيمة الإيجار" : "السعر") + "</span>", '<input id="f-price" name="price" type="number" min="0" inputmode="decimal" dir="ltr" value="' + (l.price == null ? "" : esc(l.price)) + '">') +
-            field("currency", "العملة", '<select id="f-currency" name="currency">' + options([["USD", "دولار أمريكي ($)"], ["SYP", "ليرة سورية (ل.س)"]], l.currency) + "</select>") +
+            field("currency", "العملة", '<select id="f-currency" name="currency">' + options([["USD", "دولار أمريكي ($)"], ["SYP", "ليرة سورية جديدة (ل.س)"]], l.currency) + "</select>") +
+            '<p class="form-note span-2" id="price-eq" aria-live="polite"></p>' +
             '<div class="field" data-field="rentPeriod" id="rent-period-box"' + (l.deal === "rent" ? "" : " hidden") + '><label for="f-rentPeriod">مدة الإيجار</label><select id="f-rentPeriod" name="rentPeriod">' + options([["month", "شهري"], ["year", "سنوي"]], l.rentPeriod || "month") + "</select></div>" +
             '<div class="field" style="justify-content:end"><label class="check"><input type="checkbox" name="negotiable"' + (l.negotiable ? " checked" : "") + "> السعر قابل للتفاوض</label></div>" +
           "</div></section>" +
@@ -589,6 +597,21 @@
         $("#price-label").textContent = rent ? "قيمة الإيجار" : "السعر";
       });
     });
+
+    /* ما يعادل السعر بالعملة الأخرى حسب سعر الصرف المعتمد */
+    function updatePriceEq() {
+      var box = $("#price-eq");
+      var r = Number(state.settings.usdRate) || 0;
+      var v = parseFloat(form.elements.price.value);
+      var cur = form.elements.currency.value;
+      var hint = cur === "SYP" ? "اكتب المبلغ بالليرة الجديدة (بعد حذف صفرين). " : "";
+      if (!r || !(v > 0)) { box.textContent = hint; return; }
+      var other = cur === "SYP" ? "$" + fmtNum(Math.round(v / r)) : fmtNum(Math.round(v * r)) + " ل.س";
+      box.textContent = hint + "يعادل تقريباً " + other + " حسب سعر الصرف المعتمد ($1 = " + fmtNum(r) + " ل.س).";
+    }
+    form.elements.price.addEventListener("input", updatePriceEq);
+    form.elements.currency.addEventListener("change", updatePriceEq);
+    updatePriceEq();
 
     /* المزايا */
     function renderFeatures() {
@@ -912,8 +935,16 @@
           '<label class="check"><input type="checkbox" name="notifyAgent"' + (s.notifyAgent !== false ? " checked" : "") + "> أرسل طلبات المعاينة أيضاً إلى الوسيط المسؤول عن العقار (إذا كان له بريد)</label>" +
           '<div><button type="button" class="btn btn-ghost" id="notify-test">' + icon("chat") + "إرسال بريد تجريبي إلى هذه العناوين</button></div>" +
         "</div></section>" +
-        '<section class="panel"><h2>العرض</h2><div style="display:grid; gap:1rem">' +
+        '<section class="panel" id="currency"><h2>العملة وسعر الصرف</h2><div class="form-grid">' +
+          field("usdRate", "سعر صرف الدولار: كم ليرة سورية تساوي 1 دولار", '<input id="f-usdRate" name="usdRate" type="number" min="0" step="0.01" inputmode="decimal" dir="ltr" placeholder="122" value="' + (Number(s.usdRate) > 0 ? esc(s.usdRate) : "") + '">') +
+          field("displayCurrency", "العملة التي يرى بها الزائر الأسعار أولاً", '<select id="f-displayCurrency" name="displayCurrency">' + options([["USD", "دولار أمريكي ($)"], ["SYP", "ليرة سورية (ل.س)"]], s.displayCurrency || "USD") + "</select>") +
           field("defaultCurrency", "العملة الافتراضية للعقارات الجديدة", '<select id="f-defaultCurrency" name="defaultCurrency">' + options([["USD", "دولار أمريكي ($)"], ["SYP", "ليرة سورية (ل.س)"]], s.defaultCurrency) + "</select>") +
+          '<div class="span-2 form-note" style="display:grid; gap:0.3rem">' +
+            '<p id="rate-info"><strong>' + esc(rateInfo()) + "</strong></p>" +
+            "<p>اكتب السعر بالليرة السورية الجديدة (منذ 1 كانون الثاني 2026 حُذف صفران: 12,200 ليرة قديمة = 122 ليرة جديدة). يظهر للزائر زر للتبديل بين $ و ل.س، والأسعار المحوّلة تظهر مع علامة ≈ ومعها السعر المعلن. اترك الحقل فارغاً لإخفاء التحويل.</p>" +
+          "</div>" +
+        "</div></section>" +
+        '<section class="panel"><h2>العرض</h2><div style="display:grid; gap:1rem">' +
           '<label class="check"><input type="checkbox" name="showSampleNotice"' + (s.showSampleNotice ? " checked" : "") + "> إظهار ملاحظة «العقارات المعروضة أمثلة توضيحية» في أسفل الموقع</label>" +
         "</div></section>" +
         '<div><button type="submit" class="btn btn-primary">' + icon("check") + "حفظ الإعدادات</button></div>" +
@@ -982,13 +1013,15 @@
       var body = {
         companyName: f.companyName.value, tagline: f.tagline.value, slogan: f.slogan.value, phone: f.phone.value,
         whatsapp: f.whatsapp.value, email: f.email.value, workingHours: f.workingHours.value, address: f.address.value,
-        defaultCurrency: f.defaultCurrency.value, showSampleNotice: f.showSampleNotice.checked, offices: offices,
+        defaultCurrency: f.defaultCurrency.value, displayCurrency: f.displayCurrency.value, usdRate: f.usdRate.value,
+        showSampleNotice: f.showSampleNotice.checked, offices: offices,
         notifyEnabled: f.notifyEnabled.checked, notifyAgent: f.notifyAgent.checked, notifyEmails: f.notifyEmails.value,
         social: { facebook: f["social.facebook"].value, instagram: f["social.instagram"].value, telegram: f["social.telegram"].value }
       };
       api("PUT", "/admin/settings", body).then(function (d) {
         state.settings = d.settings;
         showErrors(sf, {});
+        $("#rate-info").innerHTML = "<strong>" + esc(rateInfo()) + "</strong>";
         $$(".brand-name").forEach(function (el) { el.textContent = d.settings.companyName; });
         toast("تم حفظ الإعدادات");
       }).catch(function (e) { if (e.status === 400) showErrors(sf, e.errors); else fail(e); });

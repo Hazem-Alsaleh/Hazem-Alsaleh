@@ -129,6 +129,8 @@ function validateSettings(input) {
     address: str(input.address, 160),
     workingHours: str(input.workingHours, 120),
     defaultCurrency: input.defaultCurrency === "SYP" ? "SYP" : "USD",
+    displayCurrency: input.displayCurrency === "SYP" ? "SYP" : "USD",
+    usdRate: 0,
     showSampleNotice: bool(input.showSampleNotice),
     notifyEnabled: bool(input.notifyEnabled),
     notifyAgent: bool(input.notifyAgent),
@@ -143,6 +145,13 @@ function validateSettings(input) {
   const rawWa = str(input.whatsapp, 30);
   if ((rawWa && !/^[+\d\s()-]+$/.test(rawWa)) || (out.whatsapp && (out.whatsapp.length < 8 || out.whatsapp.length > 15))) e.whatsapp = "اكتب رقم واتساب بالصيغة الدولية، مثل 9639xxxxxxxx";
   if (out.email && !EMAIL_RE.test(out.email)) e.email = "البريد الإلكتروني غير صحيح";
+  // سعر الصرف بالليرة الجديدة (حُذف صفران في 1/1/2026). القيم الكبيرة جداً غالباً بالليرة القديمة.
+  const rate = num(input.usdRate);
+  if (rate !== null) {
+    if (isNaN(rate) || rate <= 0) e.usdRate = "أدخل سعر الصرف رقماً أكبر من صفر، أو اتركه فارغاً لإخفاء التحويل";
+    else if (rate > 5000) e.usdRate = "يبدو أن السعر بالليرة القديمة. منذ 1 كانون الثاني 2026 حُذف صفران من الليرة، فمثلاً 12,200 ليرة قديمة = 122 ليرة جديدة.";
+    else out.usdRate = Math.round(rate * 100) / 100;
+  }
   const notifyEmails = parseEmails(input.notifyEmails);
   if (notifyEmails.bad.length) e.notifyEmails = "عناوين غير صحيحة: " + notifyEmails.bad.join("، ");
   else if (notifyEmails.ok.length > 10) e.notifyEmails = "الحد الأقصى 10 عناوين";

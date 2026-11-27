@@ -135,7 +135,8 @@ window.onSiteReady(function () {
 
       '<aside class="side">' +
         '<div class="side-card">' +
-          '<div class="price-big">' + S.priceHTML(l) + "</div>" +
+          '<div class="price-big" data-price-of="' + l.id + '">' + S.priceHTML(l) + "</div>" +
+          (S.usdRate() ? '<p class="price-alt"><span data-price-alt-of="' + l.id + '">' + S.priceAltHTML(l) + '</span><small>' + S.rateNote() + "</small></p>" : "") +
           '<div class="price-meta">' + pills.join("") + "</div>" +
           '<a class="btn btn-primary btn-block" href="#viewing">' + i("calendar") + "اطلب معاينة</a>" +
           '<a class="btn btn-whatsapp btn-block" href="' + S.waLink(waText) + '" target="_blank" rel="noopener">' + i("chat") + "اسأل عن العقار عبر واتساب</a>" +
@@ -164,7 +165,7 @@ window.onSiteReady(function () {
   var bar = document.createElement("div");
   bar.className = "action-bar";
   bar.innerHTML =
-    '<div class="price-mini">' + S.priceHTML(l) + "</div>" +
+    '<div class="price-mini" data-price-of="' + l.id + '">' + S.priceHTML(l) + "</div>" +
     '<a class="icon-btn" href="' + S.waLink(waText) + '" target="_blank" rel="noopener" aria-label="واتساب">' + i("chat") + "</a>" +
     '<a class="btn btn-primary" href="#viewing">اطلب معاينة</a>';
   document.body.appendChild(bar);

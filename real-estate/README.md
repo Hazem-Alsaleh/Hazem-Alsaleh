@@ -15,7 +15,7 @@ En arabisk nettside for salg og utleie av boliger i alle Syrias 14 provinser. Te
 
 ## Starte med administrasjonspanelet
 
-Krever Node.js 18 eller nyere.
+Krever Node.js 20 eller nyere.
 
 ```bash
 cd real-estate
@@ -37,12 +37,40 @@ Første gang serveren starter, kopieres eksempelboligene, meglerne og innstillin
   - Bilder lastes opp fra PC eller mobil og forminskes automatisk før opplasting. Det første bildet er hovedbildet, og rekkefølgen kan endres.
   - En bolig kan ikke publiseres uten minst ett bilde.
   - Du blir advart hvis du prøver å forlate siden med endringer som ikke er lagret.
-- **Henvendelser:** alle skjemaene på nettsiden lagres her: verdivurdering, visning, «selg boligen din» og kontakt. Du kan ringe eller åpne WhatsApp direkte, endre status (ny / under behandling / ferdig) og slette. Antall nye vises i menyen og oppdateres hvert minutt.
-- **Meglere:** legg til, endre og slett. Hver megler kan ha eget telefonnummer og WhatsApp. Ellers brukes firmaets nummer.
+- **Henvendelser:** alle skjemaene på nettsiden lagres her: verdivurdering, visning, «selg boligen din» og kontakt. Du kan ringe eller åpne WhatsApp direkte, endre status (ny / under behandling / ferdig) og slette. Antall nye vises i menyen og oppdateres hvert minutt. Hver henvendelse viser også om e-postvarselet ble sendt.
+- **Meglere:** legg til, endre og slett. Hver megler kan ha eget telefonnummer og WhatsApp. Ellers brukes firmaets nummer. Meglerens e-post vises ikke på nettsiden, men brukes til varsel om visninger.
 - **Innstillinger:**
   - Firmanavn, slagord, telefon, WhatsApp, e-post, adresse, åpningstider, kontorer og sosiale medier.
+  - E-postvarsel: hvem som skal få e-post ved nye henvendelser, og en knapp for å sende en test-e-post.
   - Standardvaluta, og om merknaden «eksempler» skal vises nederst på siden.
   - Brukere og bytte av passord.
+
+## E-postvarsel ved nye henvendelser
+
+Når noen sender et skjema på nettsiden, kan firmaet få en e-post på arabisk med navn, telefon, WhatsApp-lenke, alle feltene fra skjemaet og en knapp som åpner henvendelsen i panelet. Gjelder henvendelsen en bolig, står boligen med lenke i e-posten.
+
+**1. Legg inn e-postserveren (SMTP) på serveren.** Kopier `.env.example` til `.env` og fyll inn SMTP-innstillingene fra e-postleverandøren eller webhotellet:
+
+```
+SITE_URL=https://www.ditt-domene.com
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=noreply@ditt-domene.com
+SMTP_PASS=passordet
+MAIL_FROM="Firmanavn <noreply@ditt-domene.com>"
+```
+
+Start serveren på nytt etterpå. Passordet ligger bare i `.env` på serveren. Det lagres ikke i datafilene, vises aldri i panelet og legges ikke i git. Bruker dere Gmail, må dere lage et «app-passord» (krever totrinnsbekreftelse). Det vanlige passordet fungerer ikke.
+
+**2. Slå på varsel i panelet:** Innstillinger → «إشعارات البريد الإلكتروني».
+- Skriv inn opptil 10 mottakeradresser, én per linje.
+- Trykk «إرسال بريد تجريبي» for å sjekke at e-posten kommer fram.
+- Lagre.
+- Velg om visningsforespørsler også skal gå til megleren som har boligen. Megleren må da ha e-post registrert under Meglere.
+
+E-posten sendes i bakgrunnen, så besøkende venter aldri på den. Hvis sendingen feiler, lagres henvendelsen likevel og merkes med en advarsel i panelet. Feilen skrives også i serverloggen. `SITE_URL` brukes til lenkene i e-posten. Uten den sendes e-posten uten lenker. Adressen hentes med vilje ikke fra forespørselen, slik at ingen kan lure inn falske lenker.
+
+For testing uten e-postserver: sett `MAIL_LOG=1`, så skrives e-postene i terminalen i stedet.
 
 ## Sikkerhet
 
@@ -66,6 +94,11 @@ Første gang serveren starter, kopieres eksempelboligene, meglerne og innstillin
 | `UPLOADS_DIR` | `./uploads` | Hvor bildene lagres |
 | `COOKIE_SECURE` | av | Sett til `1` når siden kjøres over https |
 | `TRUST_PROXY` | av | Sett til `1` når serveren står bak en proxy |
+| `SITE_URL` | – | Nettsidens adresse, brukes i lenkene i e-postvarslene |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` | – | E-postserveren for varsler (se over) |
+| `MAIL_LOG` | av | `1` skriver e-postene i terminalen i stedet for å sende dem |
+
+Variablene kan settes i filen `real-estate/.env` (se `.env.example`).
 
 ## Uten server (GitHub Pages)
 
@@ -81,6 +114,7 @@ Testene sjekker blant annet:
 - innlogging og at panelet er stengt for andre
 - oppretting, publisering og sletting av bolig med bilde
 - henvendelser fra nettsiden
+- e-postvarsel: mottakere, at innhold fra besøkende escapes, feilhåndtering og at adressene ikke er offentlige
 - at datafilene ikke kan lastes ned
 
 ## Eksempeldata og bilder

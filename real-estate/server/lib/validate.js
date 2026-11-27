@@ -16,6 +16,8 @@ function num(v) {
 }
 function bool(v) { return v === true || v === "true" || v === 1 || v === "1" || v === "on"; }
 
+const EMAIL_RE = /^[^\s@<>(),;:"]+@[^\s@<>(),;:"]+\.[^\s@<>(),;:"]+$/;
+
 function govById(id) { return reference.governorates.find((g) => g.id === id) || null; }
 
 function validateListing(input, ctx) {
@@ -97,9 +99,11 @@ function validateAgent(input) {
     languages: str(input.languages, 120),
     phone: str(input.phone, 30),
     whatsapp: str(input.whatsapp, 20).replace(/\D/g, ""),
+    email: str(input.email, 120),
     govs: (Array.isArray(input.govs) ? input.govs : []).filter((id) => govById(id))
   };
   if (out.name.length < 2) e.name = "اكتب اسم الوسيط";
+  if (out.email && !EMAIL_RE.test(out.email)) e.email = "البريد الإلكتروني غير صحيح";
   if (out.phone && !/^[+\d\s()-]{6,30}$/.test(out.phone)) e.phone = "رقم الهاتف غير صحيح";
   const rawWa = str(input.whatsapp, 30);
   if ((rawWa && !/^[+\d\s()-]+$/.test(rawWa)) || (out.whatsapp && (out.whatsapp.length < 8 || out.whatsapp.length > 15))) e.whatsapp = "اكتب رقم واتساب بالصيغة الدولية، مثل 9639xxxxxxxx";
@@ -126,6 +130,9 @@ function validateSettings(input) {
     workingHours: str(input.workingHours, 120),
     defaultCurrency: input.defaultCurrency === "SYP" ? "SYP" : "USD",
     showSampleNotice: bool(input.showSampleNotice),
+    notifyEnabled: bool(input.notifyEnabled),
+    notifyAgent: bool(input.notifyAgent),
+    notifyEmails: [],
     offices: (Array.isArray(input.offices) ? input.offices : []).slice(0, 20).map((o) => ({
       name: str(o && o.name, 80), address: str(o && o.address, 160), gov: govById(o && o.gov) ? o.gov : ""
     })).filter((o) => o.name),
@@ -135,13 +142,29 @@ function validateSettings(input) {
   if (out.phone && !/^[+\d\s()-]{6,30}$/.test(out.phone)) e.phone = "رقم الهاتف غير صحيح";
   const rawWa = str(input.whatsapp, 30);
   if ((rawWa && !/^[+\d\s()-]+$/.test(rawWa)) || (out.whatsapp && (out.whatsapp.length < 8 || out.whatsapp.length > 15))) e.whatsapp = "اكتب رقم واتساب بالصيغة الدولية، مثل 9639xxxxxxxx";
-  if (out.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(out.email)) e.email = "البريد الإلكتروني غير صحيح";
+  if (out.email && !EMAIL_RE.test(out.email)) e.email = "البريد الإلكتروني غير صحيح";
+  const notifyEmails = parseEmails(input.notifyEmails);
+  if (notifyEmails.bad.length) e.notifyEmails = "عناوين غير صحيحة: " + notifyEmails.bad.join("، ");
+  else if (notifyEmails.ok.length > 10) e.notifyEmails = "الحد الأقصى 10 عناوين";
+  else out.notifyEmails = notifyEmails.ok;
+  if (out.notifyEnabled && !out.notifyEmails.length && !e.notifyEmails) e.notifyEmails = "أضف بريداً واحداً على الأقل، أو أوقف الإشعارات";
   ["facebook", "instagram", "telegram"].forEach((k) => {
     const u = url(input.social && input.social[k]);
     if (u === null) e["social." + k] = "يجب أن يبدأ الرابط بـ https://";
     else out.social[k] = u;
   });
   return { value: out, errors: e, ok: Object.keys(e).length === 0 };
+}
+
+/* tar imot liste eller tekst skilt med komma, semikolon, mellomrom eller linjeskift */
+function parseEmails(v) {
+  const raw = Array.isArray(v) ? v : String(v == null ? "" : v).split(/[\s,;،]+/);
+  const ok = [], bad = [];
+  raw.map((x) => str(x, 120)).filter(Boolean).forEach((x) => {
+    if (!EMAIL_RE.test(x)) bad.push(x);
+    else if (!ok.some((y) => y.toLowerCase() === x.toLowerCase())) ok.push(x);
+  });
+  return { ok, bad };
 }
 
 const INQUIRY_KINDS = ["valuation", "viewing", "contact", "sell"];
@@ -165,4 +188,4 @@ function validateInquiry(input) {
   return { value: out, errors: e, ok: Object.keys(e).length === 0 };
 }
 
-module.exports = { validateListing, validateAgent, validateSettings, validateInquiry, STATUSES, INQUIRY_KINDS };
+module.exports = { validateListing, validateAgent, validateSettings, validateInquiry, parseEmails, STATUSES, INQUIRY_KINDS };

@@ -37,10 +37,10 @@ function seedData() {
   const agentIds = {};
   const agents = W.AGENTS.map((a, i) => {
     agentIds[a.id] = i + 1;
-    return Object.assign({}, a, { id: i + 1, phone: "", whatsapp: "" });
+    return Object.assign({}, a, { id: i + 1, phone: "", whatsapp: "", email: "" });
   });
   return {
-    settings: Object.assign({ showSampleNotice: true }, W.SITE_CONFIG),
+    settings: Object.assign({ showSampleNotice: true, notifyEnabled: false, notifyAgent: true, notifyEmails: [] }, W.SITE_CONFIG),
     agents,
     listings: W.LISTINGS.map((l) => Object.assign({}, l, {
       agent: agentIds[l.agent] || null,

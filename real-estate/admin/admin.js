@@ -7,7 +7,7 @@
 
   var app = document.getElementById("app");
   var modalRoot = document.getElementById("modal-root");
-  var state = { user: null, ref: null, settings: {}, agents: [], listings: [], inquiries: [], users: [] };
+  var state = { user: null, ref: null, settings: {}, agents: [], listings: [], inquiries: [], users: [], notify: { configured: false } };
   var dirty = false;
 
   var STATUS = { published: "منشور", draft: "مسودة", sold: "مباع", rented: "مؤجّر" };
@@ -211,7 +211,7 @@
   function loadAll() {
     return Promise.all([
       api("GET", "/admin/reference"), api("GET", "/admin/settings"), api("GET", "/admin/agents"),
-      api("GET", "/admin/listings"), api("GET", "/admin/inquiries"), api("GET", "/admin/users")
+      api("GET", "/admin/listings"), api("GET", "/admin/inquiries"), api("GET", "/admin/users"), api("GET", "/admin/notify/status")
     ]).then(function (r) {
       state.ref = r[0];
       state.settings = r[1].settings;
@@ -219,6 +219,7 @@
       state.listings = r[3].listings;
       state.inquiries = r[4].inquiries;
       state.users = r[5].users;
+      state.notify = r[6];
     });
   }
 
@@ -339,6 +340,8 @@
     if (!s.companyName || s.companyName === "اسم الشركة") todo.push(["اكتب الاسم النهائي للشركة", "#/settings"]);
     if (s.phone === "+963 11 000 0000" || s.whatsapp === "963900000000") todo.push(["أدخل رقم الهاتف ورقم واتساب الحقيقيين", "#/settings"]);
     if (s.email === "info@example.com") todo.push(["أدخل البريد الإلكتروني للشركة", "#/settings"]);
+    if (!s.notifyEnabled) todo.push(["فعّل إشعارات البريد لتصلك الطلبات الجديدة فور وصولها", "#/settings"]);
+    else if (!state.notify.configured) todo.push(["إشعارات البريد مفعّلة لكن خادم البريد (SMTP) غير مضبوط على الخادم", "#/settings"]);
     if (s.showSampleNotice) todo.push(["استبدل العقارات والوسطاء التجريبيين بالحقيقيين، ثم ألغِ ملاحظة «أمثلة توضيحية» من الإعدادات", "#/listings"]);
 
     var recentInq = state.inquiries.slice(0, 5);
@@ -764,6 +767,8 @@
         "</div>" +
         (q.listingId ? '<p class="small">العقار: ' + (l ? '<a href="#/listings/' + l.id + '">#' + l.id + " — " + esc(l.title) + "</a>" : "#" + q.listingId + " (محذوف)") + "</p>" : "") +
         (q.fields && q.fields.length ? "<dl>" + q.fields.map(function (p) { return "<dt>" + esc(p[0]) + "</dt><dd>" + esc(p[1]) + "</dd>"; }).join("") + "</dl>" : "") +
+        (q.email === "sent" ? '<p class="small muted mail-note">' + icon("check") + "أُرسل إشعار بالبريد</p>" : "") +
+        (q.email === "failed" ? '<p class="small mail-note mail-failed">' + icon("alert") + "تعذّر إرسال إشعار البريد. تحقق من إعدادات خادم البريد.</p>" : "") +
       "</article>";
     }).join("");
     $$("[data-inq]", box).forEach(function (sel) {
@@ -832,7 +837,7 @@
   }
 
   function agentDialog(a) {
-    a = a || { name: "", role: "", languages: "العربية", phone: "", whatsapp: "", govs: [] };
+    a = a || { name: "", role: "", languages: "العربية", phone: "", whatsapp: "", email: "", govs: [] };
     modalRoot.innerHTML =
       '<div class="modal" role="dialog" aria-modal="true" aria-labelledby="ag-title"><form class="modal-card wide" id="agent-form" novalidate>' +
         '<h2 id="ag-title">' + (a.id ? "تعديل الوسيط" : "إضافة وسيط") + "</h2>" +
@@ -841,13 +846,14 @@
           field("role", "المسمى الوظيفي", '<input id="f-role" name="role" maxlength="80" value="' + esc(a.role) + '" placeholder="وسيط عقاري">') +
           field("phone", "الهاتف (اختياري)", '<input id="f-phone" name="phone" dir="ltr" maxlength="30" value="' + esc(a.phone) + '" placeholder="+963 9xx xxx xxx">') +
           field("whatsapp", "واتساب (اختياري)", '<input id="f-whatsapp" name="whatsapp" dir="ltr" maxlength="20" value="' + esc(a.whatsapp) + '" placeholder="9639xxxxxxxx">') +
-          field("languages", "اللغات", '<input id="f-languages" name="languages" maxlength="120" value="' + esc(a.languages) + '">', "span-2") +
+          field("email", "البريد الإلكتروني (اختياري)", '<input id="f-aemail" name="email" type="email" dir="ltr" maxlength="120" value="' + esc(a.email || "") + '">', "", "f-aemail") +
+          field("languages", "اللغات", '<input id="f-languages" name="languages" maxlength="120" value="' + esc(a.languages) + '">') +
           '<fieldset class="fieldset span-2"><legend>المحافظات التي يغطيها</legend><div class="gov-checks">' +
             state.ref.governorates.map(function (g) {
               return '<label class="check"><input type="checkbox" name="govs" value="' + g.id + '"' + ((a.govs || []).indexOf(g.id) !== -1 ? " checked" : "") + "> " + g.name + "</label>";
             }).join("") +
           "</div></fieldset>" +
-          '<p class="form-note span-2">إذا تركت الهاتف وواتساب فارغين، يُستخدم رقم الشركة.</p>' +
+          '<p class="form-note span-2">إذا تركت الهاتف وواتساب فارغين، يُستخدم رقم الشركة. البريد لا يظهر في الموقع، ويُستخدم لإرسال طلبات المعاينة للوسيط إذا فعّلت ذلك في الإعدادات.</p>' +
         "</div>" +
         '<div class="modal-actions"><button type="submit" class="btn btn-primary">حفظ</button><button type="button" class="btn btn-ghost" data-cancel>إلغاء</button></div>' +
       "</form></div>";
@@ -858,7 +864,8 @@
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
       var body = {
-        name: form.elements.name.value, role: form.elements.role.value, phone: form.elements.phone.value, whatsapp: form.elements.whatsapp.value, languages: form.elements.languages.value,
+        name: form.elements.name.value, role: form.elements.role.value, phone: form.elements.phone.value, whatsapp: form.elements.whatsapp.value,
+        email: form.elements.email.value, languages: form.elements.languages.value,
         govs: $$('input[name="govs"]:checked', form).map(function (c) { return c.value; })
       };
       api(a.id ? "PUT" : "POST", "/admin/agents" + (a.id ? "/" + a.id : ""), body).then(function (d) {
@@ -897,6 +904,13 @@
           ["facebook", "instagram", "telegram"].map(function (k) {
             return field("social." + k, { facebook: "فيسبوك", instagram: "إنستغرام", telegram: "تلغرام" }[k], '<input id="f-social.' + k + '" name="social.' + k + '" dir="ltr" maxlength="300" placeholder="https://" value="' + esc((s.social || {})[k] || "") + '">');
           }).join("") +
+        "</div></section>" +
+        '<section class="panel" id="notify"><h2>إشعارات البريد الإلكتروني</h2><div style="display:grid; gap:1rem">' +
+          '<p class="notice" id="notify-status"></p>' +
+          '<label class="check"><input type="checkbox" name="notifyEnabled"' + (s.notifyEnabled ? " checked" : "") + "> أرسل بريداً عند وصول طلب جديد من الموقع</label>" +
+          field("notifyEmails", "العناوين التي تستلم الإشعارات (عنوان في كل سطر، حتى 10)", '<textarea id="f-notifyEmails" name="notifyEmails" rows="3" dir="ltr" placeholder="office@example.com">' + esc((s.notifyEmails || []).join("\n")) + "</textarea>") +
+          '<label class="check"><input type="checkbox" name="notifyAgent"' + (s.notifyAgent !== false ? " checked" : "") + "> أرسل طلبات المعاينة أيضاً إلى الوسيط المسؤول عن العقار (إذا كان له بريد)</label>" +
+          '<div><button type="button" class="btn btn-ghost" id="notify-test">' + icon("chat") + "إرسال بريد تجريبي إلى هذه العناوين</button></div>" +
         "</div></section>" +
         '<section class="panel"><h2>العرض</h2><div style="display:grid; gap:1rem">' +
           field("defaultCurrency", "العملة الافتراضية للعقارات الجديدة", '<select id="f-defaultCurrency" name="defaultCurrency">' + options([["USD", "دولار أمريكي ($)"], ["SYP", "ليرة سورية (ل.س)"]], s.defaultCurrency) + "</select>") +
@@ -944,7 +958,24 @@
     });
     $("#office-add").addEventListener("click", function () { offices.push({ name: "", address: "", gov: "" }); renderOffices(); });
 
+    var n = state.notify;
+    $("#notify-status").classList.toggle("ok", !!n.configured);
+    $("#notify-status").innerHTML = n.configured
+      ? icon("check") + " خادم البريد مضبوط" + (n.server && n.server !== "console" ? " (" + esc(n.server) + ")" : n.server === "console" ? " (وضع التجربة: تُطبع الرسائل في طرفية الخادم)" : "") + "." +
+        (n.siteUrl ? "" : " أضف SITE_URL في ملف ‎.env لتظهر روابط العقار ولوحة التحكم داخل الرسائل.")
+      : icon("alert") + " خادم البريد (SMTP) غير مضبوط بعد. أضف إعداداته في ملف <code>.env</code> على الخادم (انظر <code>.env.example</code>) ثم أعد تشغيل الموقع.";
+
     var sf = $("#settings-form");
+    $("#notify-test").addEventListener("click", function () {
+      var btn = this;
+      btn.disabled = true;
+      api("POST", "/admin/notify/test", { to: sf.elements.notifyEmails.value }).then(function (d) {
+        showErrors(sf, {});
+        toast("أُرسلت رسالة تجريبية إلى " + d.to.join("، "));
+      }).catch(function (e) {
+        if (e.status === 400) showErrors(sf, e.errors); else fail(e);
+      }).then(function () { btn.disabled = false; });
+    });
     sf.addEventListener("submit", function (ev) {
       ev.preventDefault();
       var f = sf.elements;
@@ -952,6 +983,7 @@
         companyName: f.companyName.value, tagline: f.tagline.value, slogan: f.slogan.value, phone: f.phone.value,
         whatsapp: f.whatsapp.value, email: f.email.value, workingHours: f.workingHours.value, address: f.address.value,
         defaultCurrency: f.defaultCurrency.value, showSampleNotice: f.showSampleNotice.checked, offices: offices,
+        notifyEnabled: f.notifyEnabled.checked, notifyAgent: f.notifyAgent.checked, notifyEmails: f.notifyEmails.value,
         social: { facebook: f["social.facebook"].value, instagram: f["social.instagram"].value, telegram: f["social.telegram"].value }
       };
       api("PUT", "/admin/settings", body).then(function (d) {

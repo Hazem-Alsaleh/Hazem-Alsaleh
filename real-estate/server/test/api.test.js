@@ -8,7 +8,13 @@ const { createApp } = require("../app");
 const { hashPassword } = require("../lib/auth");
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "aqar-test-"));
-const app = createApp({ dataDir: path.join(tmp, "data"), uploadsDir: path.join(tmp, "uploads") });
+const sent = [];
+const fakeMailer = {
+  configured: true, server: "test", from: "site@test", fail: false,
+  send(msg) { if (this.fail) return Promise.reject(new Error("SMTP down")); sent.push(msg); return Promise.resolve({}); }
+};
+const app = createApp({ dataDir: path.join(tmp, "data"), uploadsDir: path.join(tmp, "uploads"), mailer: fakeMailer, siteUrl: "https://aqar.example/" });
+const tick = () => new Promise((r) => setTimeout(r, 30));
 app.locals.store.insert("users", { username: "admin", password: hashPassword("correct-horse-battery"), createdAt: new Date().toISOString() });
 
 let server, base, cookie = "";
@@ -115,6 +121,73 @@ test("data and server files are not served", async () => {
   assert.strictEqual((await fetch(base + "/properties.html")).status, 200);
   assert.strictEqual((await fetch(base + "/admin/")).status, 200);
   assert.strictEqual((await fetch(base + "/admin/admin.js")).status, 200);
+});
+
+test("email notifications for new inquiries", async () => {
+  // standard: av, og e-postadressene er aldri offentlige
+  let r = await call("GET", "/api/admin/settings");
+  const base = r.data.settings;
+  assert.strictEqual(base.notifyEnabled, false);
+
+  r = await call("PUT", "/api/admin/settings", Object.assign({}, base, { notifyEnabled: true, notifyEmails: "" }));
+  assert.strictEqual(r.status, 400, "enabled without recipients is rejected");
+  r = await call("PUT", "/api/admin/settings", Object.assign({}, base, { notifyEnabled: true, notifyEmails: "office@aqar.example\nikke-en-adresse" }));
+  assert.ok(r.data.errors.notifyEmails.includes("ikke-en-adresse"));
+  r = await call("PUT", "/api/admin/settings", Object.assign({}, base, { notifyEnabled: true, notifyAgent: true, notifyEmails: "office@aqar.example, Office@aqar.example; boss@aqar.example" }));
+  assert.strictEqual(r.status, 200);
+  assert.deepStrictEqual(r.data.settings.notifyEmails, ["office@aqar.example", "boss@aqar.example"]);
+
+  const pub = await call("GET", "/api/public/data");
+  assert.ok(!("notifyEmails" in pub.data.settings) && !("notifyEnabled" in pub.data.settings));
+
+  // megleren for bolig 101 får også e-post; e-posten vises ikke offentlig
+  const listing = (await call("GET", "/api/admin/listings/101")).data.listing;
+  const agent = (await call("GET", "/api/admin/agents")).data.agents.find((a) => a.id === listing.agent);
+  r = await call("PUT", "/api/admin/agents/" + agent.id, Object.assign({}, agent, { email: "agent@aqar.example" }));
+  assert.strictEqual(r.status, 200);
+  assert.ok(!("email" in (await call("GET", "/api/public/data")).data.agents[0]));
+
+  const saved = cookie; cookie = "";
+  sent.length = 0;
+  r = await call("POST", "/api/public/inquiries", { kind: "viewing", listingId: 101, name: "<b>سامي</b>", phone: "0944 555 666", fields: [["ملاحظات", "سطر 1\nسطر 2"]] });
+  assert.strictEqual(r.status, 201);
+  await tick();
+  assert.strictEqual(sent.length, 1);
+  const m = sent[0];
+  assert.deepStrictEqual(m.to, ["office@aqar.example", "boss@aqar.example", "agent@aqar.example"]);
+  assert.match(m.subject, /^طلب معاينة جديد: <b>سامي<\/b> — العقار #101$/);
+  assert.ok(!m.html.includes("<b>سامي</b>") && m.html.includes("&lt;b&gt;سامي&lt;/b&gt;"), "user input is escaped in html");
+  assert.ok(m.html.includes("https://aqar.example/property.html?id=101") && m.html.includes("https://aqar.example/admin/#/inquiries"));
+  assert.ok(m.html.includes("https://wa.me/963944555666"));
+  assert.ok(m.text.includes("سطر 1\nسطر 2"));
+
+  // feil hos e-posttjenesten lagres på henvendelsen
+  fakeMailer.fail = true;
+  r = await call("POST", "/api/public/inquiries", { kind: "contact", name: "ليلى", phone: "0933 111 222", fields: [] });
+  await tick();
+  fakeMailer.fail = false;
+  cookie = saved;
+  const list = (await call("GET", "/api/admin/inquiries")).data.inquiries;
+  assert.strictEqual(list.find((q) => q.name === "ليلى").email, "failed");
+  assert.strictEqual(list.find((q) => q.name === "<b>سامي</b>").email, "sent");
+
+  // testknappen
+  r = await call("POST", "/api/admin/notify/test", { to: "x" });
+  assert.strictEqual(r.status, 400);
+  sent.length = 0;
+  r = await call("POST", "/api/admin/notify/test", { to: "office@aqar.example" });
+  assert.strictEqual(r.status, 200);
+  assert.strictEqual(sent.length, 1);
+  assert.strictEqual((await call("GET", "/api/admin/notify/status")).data.siteUrl, "https://aqar.example");
+
+  // slått av: ingen e-post
+  await call("PUT", "/api/admin/settings", Object.assign({}, base, { notifyEnabled: false, notifyEmails: "office@aqar.example" }));
+  cookie = "";
+  sent.length = 0;
+  await call("POST", "/api/public/inquiries", { kind: "contact", name: "عمر", phone: "0933 111 333", fields: [] });
+  await tick();
+  assert.strictEqual(sent.length, 0);
+  cookie = saved;
 });
 
 test("logout ends the session", async () => {

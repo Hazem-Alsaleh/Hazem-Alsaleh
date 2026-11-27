@@ -207,3 +207,7 @@ table.data .c-date { white-space: nowrap; }
   .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stats > :last-child:nth-child(odd) { grid-column: 1 / -1; }
 }
+.mail-note { display: flex; gap: 0.4rem; align-items: center; margin: 0; }
+.mail-failed { color: var(--heart); font-weight: 500; }
+.notice .icon { vertical-align: -0.2em; }
+.notice.ok { background: var(--brand-soft); color: var(--brand-text); }

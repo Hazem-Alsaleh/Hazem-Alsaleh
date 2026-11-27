@@ -112,7 +112,6 @@ window.onSiteReady(function () {
       '<div class="prop-head">' +
         "<div><h1>" + e(l.title) + '</h1><p class="card-loc">' + i("pin") + e(locText) + " · " + TYPES[l.type] + "</p></div>" +
         '<div class="prop-actions">' +
-          '<button type="button" class="btn btn-ghost btn-fav" data-fav="' + l.id + '" aria-pressed="false">' + i("heart") + "حفظ</button>" +
           '<button type="button" class="btn btn-ghost" id="share-btn">' + i("share") + "مشاركة</button>" +
         "</div>" +
       "</div>" +
@@ -178,7 +177,6 @@ window.onSiteReady(function () {
     return sb - sa || b.date.localeCompare(a.date);
   });
   S.renderCards(document.getElementById("similar"), others.slice(0, 3));
-  S.syncFavUI();
 
   /* نموذج المعاينة */
   S.wireForm(document.getElementById("viewing-form"), {

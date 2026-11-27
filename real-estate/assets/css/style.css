@@ -153,11 +153,6 @@ bdi.amount, .num { font-variant-numeric: tabular-nums; }
   border: 1.5px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer;
 }
 .icon-btn:hover { border-color: var(--brand); color: var(--brand-text); text-decoration: none; }
-.fav-count {
-  position: absolute; top: -4px; inset-inline-start: -4px;
-  min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px;
-  background: var(--heart); color: #fff; font-size: 0.72rem; font-weight: 700; line-height: 20px; text-align: center;
-}
 
 /* ---------- الترويسة ---------- */
 #site-header, #site-footer { display: contents; }
@@ -329,14 +324,6 @@ bdi.amount, .num { font-variant-numeric: tabular-nums; }
   display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.1rem 0.55rem; border-radius: 999px;
   background: rgba(0, 0, 0, 0.55); color: #fff; font-size: 0.78rem;
 }
-.fav-btn {
-  position: absolute; top: 10px; inset-inline-end: 10px; z-index: 2;
-  width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
-  background: rgba(255, 255, 255, 0.92); color: #23302b; border: 0; cursor: pointer; box-shadow: var(--shadow-sm);
-}
-.fav-btn:hover { color: var(--heart); }
-.fav-btn.is-on { color: var(--heart); }
-.fav-btn.is-on .icon, .btn-fav.is-on .icon { fill: currentColor; }
 .card-body { display: flex; flex-direction: column; gap: 0.3rem; padding: 1rem 1.1rem 1.15rem; flex: 1; }
 .card-loc { display: flex; align-items: center; gap: 0.35rem; color: var(--muted); font-size: 0.88rem; }
 .card-title { font-family: var(--font-body); font-size: 1.05rem; font-weight: 600; line-height: 1.5; }
@@ -544,7 +531,6 @@ bdi.amount, .num { font-variant-numeric: tabular-nums; }
 .agent span { color: var(--muted); font-size: 0.88rem; }
 .agent-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
 .agent-actions .btn { padding-inline: 0.6rem; }
-.btn-fav.is-on { color: var(--heart); border-color: var(--heart); }
 
 /* ---------- نافذة الصور ---------- */
 .lightbox { position: fixed; inset: 0; z-index: 100; background: rgba(5, 12, 10, 0.97); display: grid; grid-template-rows: auto 1fr auto; padding: calc(env(safe-area-inset-top, 0px) + 0.75rem) var(--gutter-r) calc(env(safe-area-inset-bottom, 0px) + 0.75rem) var(--gutter-l); color: #fff; }

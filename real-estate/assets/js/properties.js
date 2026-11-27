@@ -39,7 +39,6 @@ window.onSiteReady(function () {
     own.value = p.get("own") || "";
     finish.value = p.get("finish") || "";
     el("f-furnished").checked = p.get("furnished") === "1";
-    el("f-fav").checked = p.get("fav") === "1";
     el("f-q").value = p.get("q") || "";
     sort.value = p.get("sort") || "new";
   }
@@ -61,7 +60,6 @@ window.onSiteReady(function () {
       own: own.value,
       finish: finish.value,
       furnished: el("f-furnished").checked,
-      fav: el("f-fav").checked,
       q: el("f-q").value.trim(),
       sort: sort.value
     };
@@ -81,7 +79,6 @@ window.onSiteReady(function () {
     if (f.own) p.set("own", f.own);
     if (f.finish) p.set("finish", f.finish);
     if (f.furnished) p.set("furnished", "1");
-    if (f.fav) p.set("fav", "1");
     if (f.q) p.set("q", f.q);
     if (f.sort && f.sort !== "new") p.set("sort", f.sort);
     var qs = p.toString();
@@ -91,7 +88,7 @@ window.onSiteReady(function () {
   /* السعر الشهري للمقارنة بين الإيجار الشهري والسنوي */
   function cmpPrice(l) { return l.deal === "rent" && l.rentPeriod === "year" ? l.price / 12 : l.price; }
 
-  function matches(l, f, favs) {
+  function matches(l, f) {
     if (f.deal && l.deal !== f.deal) return false;
     if (f.gov && l.gov !== f.gov) return false;
     if (f.place && l.place !== f.place) return false;
@@ -104,7 +101,6 @@ window.onSiteReady(function () {
     if (f.own && l.ownership !== f.own) return false;
     if (f.finish && l.finish !== f.finish) return false;
     if (f.furnished && !l.furnished) return false;
-    if (f.fav && favs.indexOf(l.id) === -1) return false;
     if (f.q) {
       var hay = [l.title, l.description, l.place, l.district, S.govName(l.gov), TYPES[l.type]].concat(l.features || []).join(" ");
       var words = f.q.split(/\s+/);
@@ -125,7 +121,6 @@ window.onSiteReady(function () {
     var where = f.place ? " في " + S.placeShort(f.place) : f.gov ? " في " + S.govName(f.gov) : " في سوريا";
     var dealTxt = f.deal === "sale" ? " للبيع" : f.deal === "rent" ? " للإيجار" : " للبيع والإيجار";
     var title = (f.type.length === 1 ? (f.type[0] === "land" ? "أراضٍ" : what) : what) + dealTxt + where;
-    if (f.fav) title = "العقارات المحفوظة في المفضلة";
     el("ph-title").textContent = title;
     el("bc-current").textContent = f.deal === "sale" ? "للبيع" : f.deal === "rent" ? "للإيجار" : "العقارات";
     el("f-price-label").textContent = f.deal === "rent" ? "الإيجار الشهري ($)" : "السعر ($)";
@@ -153,7 +148,6 @@ window.onSiteReady(function () {
     if (f.own) list.push(chip(f.own, function () { own.value = ""; }));
     if (f.finish) list.push(chip("إكساء " + f.finish, function () { finish.value = ""; }));
     if (f.furnished) list.push(chip("مفروش", function () { el("f-furnished").checked = false; }));
-    if (f.fav) list.push(chip("المفضلة", function () { el("f-fav").checked = false; }));
     if (f.q) list.push(chip("«" + f.q + "»", function () { el("f-q").value = ""; }));
 
     chips.innerHTML = list.map(function (c, i) {
@@ -166,8 +160,7 @@ window.onSiteReady(function () {
 
   function update() {
     var f = collect();
-    var favs = S.getFavs();
-    var out = L.filter(function (l) { return matches(l, f, favs); }).sort(sorters[f.sort] || sorters["new"]);
+    var out = L.filter(function (l) { return matches(l, f); }).sort(sorters[f.sort] || sorters["new"]);
     S.renderCards(results, out);
     empty.hidden = out.length > 0;
     results.hidden = out.length === 0;
@@ -210,7 +203,6 @@ window.onSiteReady(function () {
   el("filter-close").addEventListener("click", function () { openFilters(false); });
   el("filter-apply").addEventListener("click", function () { update(); openFilters(false); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") openFilters(false); });
-  document.addEventListener("favs-changed", function () { if (el("f-fav").checked) update(); });
 
   readURL();
   update();

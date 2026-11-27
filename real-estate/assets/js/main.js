@@ -1,5 +1,5 @@
 /*
- * الأجزاء المشتركة بين كل الصفحات: الترويسة، التذييل، بطاقات العقارات، المفضلة، النماذج.
+ * الأجزاء المشتركة بين كل الصفحات: الترويسة، التذييل، بطاقات العقارات، النماذج.
  */
 (function () {
   "use strict";
@@ -20,7 +20,6 @@
     bed: '<path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 18h18M3 14h18M6 10V7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/>',
     bath: '<path d="M4 12h16v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-3zM6 12V6a2 2 0 0 1 3.5-1.3M7 19l-1 2M17 19l1 2"/>',
     area: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
-    heart: '<path d="M12 20s-7-4.4-9-9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.6-9 9-9 9z"/>',
     phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
     chat: '<path d="M20 12a8 8 0 0 1-11.8 7L4 20l1.1-4A8 8 0 1 1 20 12z"/><path d="M9 10h.01M12 10h.01M15 10h.01"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
@@ -105,44 +104,6 @@
   }
   function telLink(phone) { return "tel:" + String(phone || C.phone).replace(/\s+/g, ""); }
 
-  /* ---------- المفضلة (تُحفظ في متصفح الزائر فقط) ---------- */
-  var FAV_KEY = "aqar-favorites";
-  function getFavs() {
-    try { return JSON.parse(localStorage.getItem(FAV_KEY) || "[]"); } catch (e) { return memFavs; }
-  }
-  var memFavs = [];
-  function setFavs(list) {
-    memFavs = list;
-    try { localStorage.setItem(FAV_KEY, JSON.stringify(list)); } catch (e) { /* التخزين غير متاح */ }
-  }
-  function isFav(id) { return getFavs().indexOf(Number(id)) !== -1; }
-  function toggleFav(id) {
-    id = Number(id);
-    var f = getFavs(), i = f.indexOf(id);
-    if (i === -1) f.push(id); else f.splice(i, 1);
-    setFavs(f);
-    syncFavUI();
-    toast(i === -1 ? "أُضيف العقار إلى المفضلة" : "أُزيل العقار من المفضلة");
-    document.dispatchEvent(new CustomEvent("favs-changed"));
-    return i === -1;
-  }
-  function syncFavUI() {
-    var f = getFavs();
-    document.querySelectorAll("[data-fav]").forEach(function (b) {
-      var on = f.indexOf(Number(b.getAttribute("data-fav"))) !== -1;
-      b.classList.toggle("is-on", on);
-      b.setAttribute("aria-pressed", on ? "true" : "false");
-    });
-    document.querySelectorAll(".fav-count").forEach(function (el) {
-      el.textContent = f.length ? String(f.length) : "";
-      el.hidden = !f.length;
-    });
-  }
-  document.addEventListener("click", function (e) {
-    var b = e.target.closest("[data-fav]");
-    if (b) { e.preventDefault(); toggleFav(b.getAttribute("data-fav")); }
-  });
-
   /* ---------- إشعار صغير ---------- */
   var toastTimer;
   function toast(msg) {
@@ -168,7 +129,6 @@
           '<span class="badge ' + (l.deal === "rent" ? "badge-rent" : "badge-sale") + '">' + dealLabel(l.deal) + "</span>" +
           (l.images.length > 1 ? '<span class="photo-count">' + icon("camera") + l.images.length + "</span>" : "") +
         "</a>" +
-        '<button type="button" class="fav-btn" data-fav="' + l.id + '" aria-pressed="false" aria-label="حفظ في المفضلة">' + icon("heart") + "</button>" +
         '<div class="card-body">' +
           '<p class="card-loc">' + icon("pin") + esc(locationLabel(l)) + "</p>" +
           '<h3 class="card-title"><a href="' + href + '">' + esc(l.title) + "</a></h3>" +
@@ -181,7 +141,6 @@
   }
   function renderCards(container, list) {
     container.innerHTML = list.map(cardHTML).join("");
-    syncFavUI();
   }
 
   /* ---------- قوائم المحافظات والمدن ---------- */
@@ -317,7 +276,6 @@
           '<li class="nav-cta-mobile"><a class="btn btn-accent" href="sell.html#valuation">تقييم مجاني لعقارك</a></li>' +
         "</ul></nav>" +
         '<div class="header-actions">' +
-          '<a class="icon-btn" href="properties.html?fav=1" aria-label="العقارات المحفوظة">' + icon("heart") + '<span class="fav-count" hidden></span></a>' +
           '<a class="btn btn-accent header-cta" href="sell.html#valuation">تقييم مجاني</a>' +
           '<button type="button" class="icon-btn menu-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="فتح القائمة">' + icon("menu") + "</button>" +
         "</div>" +
@@ -397,7 +355,6 @@
     renderHeader();
     renderFooter();
     applyCompanyName();
-    syncFavUI();
     isReady = true;
     readyQueue.forEach(function (fn) { fn(); });
     readyQueue = [];
@@ -408,7 +365,7 @@
     icon: icon, esc: esc, fmtNum: fmtNum, govById: govById, govName: govName, placeShort: placeShort,
     locationLabel: locationLabel, priceHTML: priceHTML, priceText: priceText, dealLabel: dealLabel,
     roomsLabel: roomsLabel, img: img, findListing: findListing, agentById: agentById, initials: initials,
-    waLink: waLink, telLink: telLink, getFavs: getFavs, isFav: isFav, toggleFav: toggleFav, syncFavUI: syncFavUI,
+    waLink: waLink, telLink: telLink,
     toast: toast, cardHTML: cardHTML, renderCards: renderCards, fillGovSelect: fillGovSelect,
     fillPlaceSelect: fillPlaceSelect, fillTypeSelect: fillTypeSelect, wireForm: wireForm
   };

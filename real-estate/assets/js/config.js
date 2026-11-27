@@ -17,7 +17,7 @@ window.SITE_CONFIG = {
 
   // المكاتب (أمثلة — عدّلها أو احذف ما لا تحتاجه)
   offices: [
-    { name: "مكتب دمشق — الإدارة", address: "المزة، أوتوستراد المزة", gov: "damascus" },
+    { name: "مكتب دمشق (الإدارة العامة)", address: "المزة، أوتوستراد المزة", gov: "damascus" },
     { name: "مكتب حلب", address: "العزيزية، الشارع الرئيسي", gov: "aleppo" },
     { name: "مكتب اللاذقية", address: "مركز المدينة، قرب الكورنيش", gov: "latakia" },
     { name: "مكتب حمص", address: "الإنشاءات", gov: "homs" }

@@ -23,7 +23,7 @@ window.onSiteReady(function () {
     root.innerHTML =
       '<div class="container section"><div class="empty-state">' +
         "<h3>لم نجد هذا العقار</h3>" +
-        "<p>ربما بيع أو أُجّر أو أن الرابط غير صحيح.</p>" +
+        "<p>ربما بِيع أو أُجِّر، أو أن الرابط غير صحيح.</p>" +
         '<a class="btn btn-primary" href="properties.html">تصفّح كل العقارات</a>' +
       "</div></div>";
     return;
@@ -48,7 +48,7 @@ window.onSiteReady(function () {
   keys.push(["المساحة", '<bdi>' + S.fmtNum(l.size) + "</bdi> م²"]);
   if (l.rooms) keys.push(["غرف النوم", l.rooms]);
   if (l.baths) keys.push(["الحمامات", l.baths]);
-  if (l.land && l.land !== l.size) keys.push(["الأرض", '<bdi>' + S.fmtNum(l.land) + "</bdi> م²"]);
+  if (l.land && l.land !== l.size) keys.push(["مساحة الأرض", '<bdi>' + S.fmtNum(l.land) + "</bdi> م²"]);
   else if (typeof l.floor === "number" && l.totalFloors) keys.push(["الطابق", l.floor === 0 ? "أرضي" : l.floor]);
   var keyStrip = '<dl class="facts-bar">' + keys.slice(0, 5).map(function (k) {
     return "<div><dt>" + k[0] + "</dt><dd>" + k[1] + "</dd></div>";
@@ -71,15 +71,15 @@ window.onSiteReady(function () {
     l.finish ? ["الإكساء", e(l.finish)] : null,
     l.direction ? ["الاتجاه", e(l.direction)] : null,
     l.ownership ? ["نوع الملكية", e(l.ownership)] : null,
-    l.deal === "rent" ? ["مدة الإيجار", l.rentPeriod === "year" ? "سنوي" : "شهري"] : null,
+    l.deal === "rent" ? ["الإيجار", l.rentPeriod === "year" ? "سنوي" : "شهري"] : null,
     l.deal === "rent" || l.furnished ? ["مفروش", l.furnished ? "نعم" : "لا"] : null,
-    ["تاريخ الإضافة", fmtDate(l.date)]
+    ["تاريخ النشر", fmtDate(l.date)]
   ].filter(Boolean);
   var factsHTML = '<dl class="facts">' + facts.map(function (f) { return "<div><dt>" + f[0] + "</dt><dd>" + f[1] + "</dd></div>"; }).join("") + "</dl>";
 
   var featuresHTML = (l.features || []).length
     ? '<ul class="feature-list">' + l.features.map(function (f) { return "<li>" + e(f) + "</li>"; }).join("") + "</ul>"
-    : "<p>لا توجد مزايا مسجّلة.</p>";
+    : "<p>لم تُضف مزايا لهذا العقار.</p>";
 
   var locText = S.locationLabel(l);
   var mapQuery = [l.district, S.placeShort(l.place), g ? g.name : "", "سوريا"].filter(Boolean).join("، ");
@@ -122,14 +122,14 @@ window.onSiteReady(function () {
       '<div class="prop-main">' +
         keyStrip +
         '<nav class="quick-nav" aria-label="أقسام الصفحة">' +
-          '<a href="#about">عن العقار</a><a href="#details">المعلومات الأساسية</a><a href="#features">المزايا</a><a href="#location">الموقع</a><a href="#viewing">طلب معاينة</a>' +
+          '<a href="#about">عن العقار</a><a href="#details">المواصفات</a><a href="#features">المزايا</a><a href="#location">الموقع</a><a href="#viewing">طلب معاينة</a>' +
         "</nav>" +
         '<section class="prop-section" id="about"><h2>عن العقار</h2><p class="prop-desc">' + e(l.description) + "</p></section>" +
-        '<section class="prop-section" id="details"><h2>المعلومات الأساسية</h2>' + factsHTML + "</section>" +
-        '<section class="prop-section" id="features"><h2>المزايا والخدمات</h2>' + featuresHTML + "</section>" +
+        '<section class="prop-section" id="details"><h2>المواصفات</h2>' + factsHTML + "</section>" +
+        '<section class="prop-section" id="features"><h2>المزايا</h2>' + featuresHTML + "</section>" +
         '<section class="prop-section" id="location"><h2>الموقع</h2>' +
-          '<div class="map-box"><div><strong>' + e(locText) + "</strong><p>يُرسَل العنوان الدقيق بعد تأكيد موعد المعاينة.</p></div>" +
-          '<a class="text-link" href="' + mapURL + '" target="_blank" rel="noopener">فتح المنطقة على الخريطة</a></div>' +
+          '<div class="map-box"><div><strong>' + e(locText) + "</strong><p>نرسل لك العنوان الدقيق بعد تأكيد موعد المعاينة.</p></div>" +
+          '<a class="text-link" href="' + mapURL + '" target="_blank" rel="noopener">عرض المنطقة على الخريطة</a></div>' +
         "</section>" +
       "</div>" +
 
@@ -147,7 +147,7 @@ window.onSiteReady(function () {
           '<form id="viewing-form" class="form-grid" novalidate>' +
             '<div class="field span-2"><label for="v-name">الاسم</label><input id="v-name" name="name" autocomplete="name" required></div>' +
             '<div class="field span-2"><label for="v-phone">رقم الهاتف</label><input id="v-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="09xx xxx xxx" required></div>' +
-            '<div class="field"><label for="v-date">اليوم المفضّل</label><input id="v-date" name="date" type="date" min="' + today + '"></div>' +
+            '<div class="field"><label for="v-date">التاريخ المناسب</label><input id="v-date" name="date" type="date" min="' + today + '"></div>' +
             '<div class="field"><label for="v-time">الوقت</label><select id="v-time" name="time"><option value="">أي وقت</option><option>صباحاً</option><option>بعد الظهر</option><option>مساءً</option></select></div>' +
             '<div class="field span-2"><label for="v-msg">ملاحظات (اختياري)</label><textarea id="v-msg" name="msg" rows="3"></textarea></div>' +
             '<div class="span-2"><button class="btn btn-accent btn-block" type="submit">أرسل طلب المعاينة</button></div>' +
@@ -186,9 +186,9 @@ window.onSiteReady(function () {
     listingId: l.id,
     whatsapp: agent && agent.whatsapp,
     title: "طلب معاينة للعقار رقم #" + l.id + " — " + l.title + " (" + locText + ")",
-    fields: [["name", "الاسم"], ["phone", "الهاتف"], ["date", "اليوم المفضّل"], ["time", "الوقت"], ["msg", "ملاحظات"]],
+    fields: [["name", "الاسم"], ["phone", "الهاتف"], ["date", "التاريخ المناسب"], ["time", "الوقت"], ["msg", "ملاحظات"]],
     successTitle: "تم استلام طلب المعاينة",
-    successText: "سيتصل بك " + (agent ? agent.name : "الوسيط") + " لتأكيد الموعد. لتأكيد أسرع، أرسل الطلب نفسه عبر واتساب."
+    successText: "سيتصل بك " + (agent ? agent.name : "الوسيط") + " لتأكيد الموعد."
   });
 
   /* المشاركة */
@@ -199,7 +199,7 @@ window.onSiteReady(function () {
       return;
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(url).then(function () { S.toast("نُسخ رابط العقار"); }, function () { S.toast("انسخ الرابط من شريط العنوان"); });
+      navigator.clipboard.writeText(url).then(function () { S.toast("تم نسخ رابط العقار"); }, function () { S.toast("انسخ الرابط من شريط العنوان"); });
     } else {
       S.toast("انسخ الرابط من شريط العنوان");
     }

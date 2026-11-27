@@ -36,14 +36,14 @@ window.COMMON_FEATURES = [
 ];
 
 window.AGENTS = [
-  { id: "a1", name: "سامر الخطيب", role: "مدير المكتب — مبيعات", govs: ["damascus"], languages: "العربية، الإنكليزية" },
-  { id: "a2", name: "ريم العلي", role: "وسيطة عقارية — إيجارات", govs: ["damascus", "rif-dimashq"], languages: "العربية، الفرنسية" },
+  { id: "a1", name: "سامر الخطيب", role: "مدير مكتب دمشق", govs: ["damascus"], languages: "العربية، الإنكليزية" },
+  { id: "a2", name: "ريم العلي", role: "وسيطة عقارية، قسم الإيجارات", govs: ["damascus", "rif-dimashq"], languages: "العربية، الفرنسية" },
   { id: "a3", name: "ماهر الحسن", role: "وسيط عقاري", govs: ["rif-dimashq", "quneitra"], languages: "العربية" },
-  { id: "a4", name: "لينا حداد", role: "وسيطة عقارية — الساحل", govs: ["latakia", "tartus"], languages: "العربية، الإنكليزية" },
+  { id: "a4", name: "لينا حداد", role: "وسيطة عقارية في الساحل", govs: ["latakia", "tartus"], languages: "العربية، الإنكليزية" },
   { id: "a5", name: "عمر الشامي", role: "مدير فرع حلب", govs: ["aleppo", "idlib"], languages: "العربية، التركية" },
   { id: "a6", name: "نور الدين سليمان", role: "وسيط عقاري", govs: ["homs", "hama"], languages: "العربية" },
   { id: "a7", name: "هبة منصور", role: "وسيطة عقارية", govs: ["as-suwayda", "daraa"], languages: "العربية، الإنكليزية" },
-  { id: "a8", name: "خالد العبدالله", role: "وسيط عقاري — المنطقة الشرقية", govs: ["hasakah", "raqqa", "deir-ez-zor"], languages: "العربية، الكردية" }
+  { id: "a8", name: "خالد العبدالله", role: "وسيط عقاري في المنطقة الشرقية", govs: ["hasakah", "raqqa", "deir-ez-zor"], languages: "العربية، الكردية" }
 ];
 
 window.LISTINGS = [
@@ -56,7 +56,7 @@ window.LISTINGS = [
     finish: "سوبر ديلوكس", direction: "قبلي شرقي", ownership: "طابو أخضر", furnished: false,
     features: ["مصعد", "موقف سيارة", "طاقة شمسية", "شوفاج", "مطبخ راكب", "بلكون", "باب أمان", "اشتراك أمبيرات"],
     images: ["building-1", "living-6", "kitchen-1", "bedroom-1"],
-    description: "شقة واسعة في موقع هادئ قريب من أوتوستراد المزة، مؤلفة من صالون كبير وثلاث غرف نوم وحمامين ومطبخ راكب. الإكساء سوبر ديلوكس حديث، والشقة مشمسة طوال النهار بفضل الاتجاه القبلي الشرقي. البناء مخدّم بمصعد ومولدة وطاقة شمسية للأقسام المشتركة.",
+    description: "شقة واسعة في موقع هادئ قريب من أوتوستراد المزة، مؤلفة من صالون كبير وثلاث غرف نوم وحمامين ومطبخ راكب. الإكساء سوبر ديلوكس حديث، والشقة مشمسة طوال النهار بفضل الاتجاه القبلي الشرقي. البناء مخدّم بمصعد ومولدة وطاقة شمسية للأجزاء المشتركة.",
     agent: "a1", date: "2026-11-24"
   },
   {
@@ -92,12 +92,12 @@ window.LISTINGS = [
     finish: "سوبر ديلوكس", direction: "قبلي شرقي", ownership: "طابو أخضر", furnished: true,
     features: ["مفروش بالكامل", "مصعد", "شوفاج", "تكييف", "اشتراك أمبيرات", "إنترنت", "موقف سيارة"],
     images: ["living-4", "living-1", "bedroom-1", "kitchen-1"],
-    description: "شقة أنيقة مفروشة بالكامل وجاهزة للسكن فوراً، مناسبة للعائلات أو للشركات والموظفين الأجانب. تحتوي على صالون وثلاث غرف نوم وحمامين، مع تكييف في كل الغرف واشتراك أمبيرات وإنترنت.",
+    description: "شقة أنيقة مفروشة بالكامل وجاهزة للسكن فوراً، تناسب العائلات والشركات والموظفين الأجانب. تحتوي على صالون وثلاث غرف نوم وحمامين، مع تكييف في كل الغرف واشتراك أمبيرات وإنترنت.",
     agent: "a2", date: "2026-11-25"
   },
   {
     id: 105, deal: "rent", type: "apartment",
-    title: "شقة عائلية غير مفروشة قرب الجامع",
+    title: "شقة عائلية غير مفروشة في الميدان",
     gov: "damascus", place: "الميدان",
     price: 450, currency: "USD", rentPeriod: "month",
     size: 110, rooms: 2, baths: 1, floor: 1, totalFloors: 4, year: 1998,
@@ -116,7 +116,7 @@ window.LISTINGS = [
     finish: "سوبر ديلوكس", direction: "قبلي", ownership: "طابو أخضر", furnished: true,
     features: ["مسبح", "حديقة", "موقف سيارة", "شوفاج", "تكييف", "طاقة شمسية", "مولدة خاصة", "غرفة حارس"],
     images: ["villa-3", "living-9", "living-7", "bedroom-1"],
-    description: "فيلا مستقلة من ثلاثة طوابق في منطقة الفيلات الغربية الهادئة، مع حديقة خاصة ومسبح ومولدة كهرباء مستقلة. مناسبة لعائلة كبيرة أو مقر لبعثة دبلوماسية أو شركة.",
+    description: "فيلا مستقلة من ثلاثة طوابق في منطقة الفيلات الغربية الهادئة، مع حديقة خاصة ومسبح ومولدة كهرباء مستقلة. تناسب عائلة كبيرة، أو مقراً لبعثة دبلوماسية أو لشركة.",
     agent: "a2", date: "2026-11-26"
   },
   {
@@ -145,7 +145,7 @@ window.LISTINGS = [
   },
   {
     id: 109, deal: "sale", type: "apartment",
-    title: "شقة اقتصادية مناسبة للأزواج الجدد",
+    title: "شقة صغيرة بسعر مناسب في قدسيا",
     gov: "rif-dimashq", place: "قدسيا",
     price: 45000, currency: "USD", negotiable: true,
     size: 95, rooms: 2, baths: 1, floor: 3, totalFloors: 4, year: 2005,
@@ -313,7 +313,7 @@ window.LISTINGS = [
   },
   {
     id: 123, deal: "rent", type: "apartment",
-    title: "شقة للإيجار السنوي",
+    title: "شقة للإيجار السنوي في القامشلي",
     gov: "hasakah", place: "القامشلي",
     price: 3000, currency: "USD", rentPeriod: "year",
     size: 125, rooms: 3, baths: 1, floor: 2, totalFloors: 4, year: 2011,

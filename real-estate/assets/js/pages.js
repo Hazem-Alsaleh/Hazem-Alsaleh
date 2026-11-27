@@ -33,7 +33,8 @@ window.onSiteReady(function () {
     function render() {
       var g = sel.value;
       var list = window.AGENTS.filter(function (a) { return !g || a.govs.indexOf(g) !== -1; });
-      count.textContent = list.length ? (list.length === 1 ? "وسيط واحد" : list.length === 2 ? "وسيطان" : list.length + " وسطاء") : "";
+      var k = list.length;
+      count.textContent = k ? (k === 1 ? "وسيط واحد" : k === 2 ? "وسيطان" : k <= 10 ? k + " وسطاء" : k + " وسيطاً") : "";
       if (!list.length) {
         grid.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1"><h3>لا يوجد وسيط مخصّص لهذه المحافظة بعد</h3><p>تواصل مع المكتب الرئيسي وسنحوّلك إلى الوسيط الأقرب.</p><a class="btn btn-primary" href="contact.html">اتصل بنا</a></div>';
         return;
@@ -47,7 +48,7 @@ window.onSiteReady(function () {
           '<ul class="agent-meta">' +
             "<li>" + S.icon("pin") + "<span>" + S.esc(areas) + "</span></li>" +
             "<li>" + S.icon("chat") + "<span>اللغات: " + S.esc(a.languages) + "</span></li>" +
-            "<li>" + S.icon("home") + "<span>" + (n ? n + " عقارات معروضة حالياً" : "لا عقارات معروضة حالياً") + "</span></li>" +
+            "<li>" + S.icon("home") + "<span>" + (n === 0 ? "لا توجد عقارات معروضة حالياً" : n === 1 ? "عقار واحد معروض حالياً" : n === 2 ? "عقاران معروضان حالياً" : n <= 10 ? n + " عقارات معروضة حالياً" : n + " عقاراً معروضاً حالياً") + "</span></li>" +
           "</ul>" +
           '<div class="agent-actions">' +
             '<a class="btn btn-ghost" href="' + S.telLink(a.phone) + '">' + S.icon("phone") + "اتصال</a>" +

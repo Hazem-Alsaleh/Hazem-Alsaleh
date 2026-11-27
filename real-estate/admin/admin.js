@@ -449,7 +449,7 @@
         api("PATCH", "/admin/listings/" + id, { featured: next }).then(function (d) {
           replaceListing(d.listing);
           b.setAttribute("aria-pressed", next ? "true" : "false");
-          toast(next ? "سيظهر العقار في الصفحة الرئيسية" : "أُزيل العقار من المميزة");
+          toast(next ? "سيظهر العقار في الصفحة الرئيسية" : "لم يعد العقار مميزاً");
         }, fail);
       });
     });
@@ -528,7 +528,7 @@
           '<section class="panel"><h2>السعر</h2><div class="form-grid">' +
             field("price", '<span id="price-label">' + (l.deal === "rent" ? "قيمة الإيجار" : "السعر") + "</span>", '<input id="f-price" name="price" type="number" min="0" inputmode="decimal" dir="ltr" value="' + (l.price == null ? "" : esc(l.price)) + '">') +
             field("currency", "العملة", '<select id="f-currency" name="currency">' + options([["USD", "دولار أمريكي ($)"], ["SYP", "ليرة سورية (ل.س)"]], l.currency) + "</select>") +
-            '<div class="field" data-field="rentPeriod" id="rent-period-box"' + (l.deal === "rent" ? "" : " hidden") + '><label for="f-rentPeriod">مدة الإيجار</label><select id="f-rentPeriod" name="rentPeriod">' + options([["month", "شهري"], ["year", "سنوي"]], l.rentPeriod || "month") + "</select></div>" +
+            '<div class="field" data-field="rentPeriod" id="rent-period-box"' + (l.deal === "rent" ? "" : " hidden") + '><label for="f-rentPeriod">نوع الإيجار</label><select id="f-rentPeriod" name="rentPeriod">' + options([["month", "شهري"], ["year", "سنوي"]], l.rentPeriod || "month") + "</select></div>" +
             '<div class="field" style="justify-content:end"><label class="check"><input type="checkbox" name="negotiable"' + (l.negotiable ? " checked" : "") + "> السعر قابل للتفاوض</label></div>" +
           "</div></section>" +
 
@@ -811,7 +811,7 @@
           '<ul class="agent-meta">' +
             "<li>" + icon("pin") + "<span>" + esc((a.govs || []).map(govName).join("، ") || "كل المحافظات") + "</span></li>" +
             (a.phone ? "<li>" + icon("phone") + '<bdi dir="ltr">' + esc(a.phone) + "</bdi></li>" : "") +
-            "<li>" + icon("layers") + "<span>" + n + " عقار</span></li>" +
+            "<li>" + icon("layers") + "<span>" + (n === 0 ? "لا عقارات" : n === 1 ? "عقار واحد" : n === 2 ? "عقاران" : n <= 10 ? n + " عقارات" : n + " عقاراً") + "</span></li>" +
           "</ul>" +
           '<div class="agent-actions"><button type="button" class="btn btn-ghost btn-sm" data-agent-edit="' + a.id + '">' + icon("edit") + "تعديل</button>" +
           '<button type="button" class="btn btn-danger btn-sm" data-agent-del="' + a.id + '">' + icon("trash") + "حذف</button></div>" +

@@ -212,7 +212,7 @@
           ? '<div class="form-success-icon">' + icon("check") + "</div>" +
             "<h3>" + esc(opts.successTitle || "شكراً لك، وصلنا طلبك") + "</h3>" +
             "<p>" + esc(opts.successText || "سيتواصل معك أحد وسطائنا خلال يوم عمل واحد.") + "</p>" +
-            '<a class="btn btn-ghost" href="' + waLink(msg, opts.whatsapp) + '" target="_blank" rel="noopener">' + icon("chat") + "للرد الأسرع: راسلنا على واتساب</a>" +
+            '<a class="btn btn-ghost" href="' + waLink(msg, opts.whatsapp) + '" target="_blank" rel="noopener">' + icon("chat") + "تواصل معنا عبر واتساب</a>" +
             '<button type="button" class="btn btn-ghost form-reset">إرسال طلب آخر</button>'
           : '<div class="form-success-icon">' + icon("chat") + "</div>" +
             "<h3>خطوة أخيرة: أرسل طلبك عبر واتساب</h3>" +
@@ -239,7 +239,7 @@
 
   var NAV = [
     { href: "properties.html?deal=sale", label: "شراء", key: "sale" },
-    { href: "properties.html?deal=rent", label: "استئجار", key: "rent" },
+    { href: "properties.html?deal=rent", label: "إيجار", key: "rent" },
     { href: "sell.html", label: "بيع أو تأجير عقارك", key: "sell" },
     { href: "agents.html", label: "الوسطاء", key: "agents" },
     { href: "contact.html", label: "اتصل بنا", key: "contact" }
@@ -314,7 +314,7 @@
           '<div class="footer-about">' +
             '<a class="brand brand-light" href="index.html">' + BRAND_MARK +
               '<span class="brand-text"><span class="brand-name">' + esc(C.companyName) + '</span><span class="brand-tag">' + esc(C.tagline) + "</span></span></a>" +
-            "<p>نساعدك على بيع عقارك أو شرائه أو استئجاره في كل المحافظات السورية، مع وسطاء محليين يعرفون الأحياء والأسعار وإجراءات نقل الملكية.</p>" +
+            "<p>نساعدك على شراء عقار أو استئجاره، وعلى بيع عقارك أو تأجيره، في كل المحافظات السورية. وسطاؤنا محليون يعرفون الأحياء والأسعار وإجراءات نقل الملكية.</p>" +
             (social.length ? '<p class="footer-social">' + social.join(" · ") + "</p>" : "") +
           "</div>" +
           '<div><h3>العقارات</h3><ul>' +

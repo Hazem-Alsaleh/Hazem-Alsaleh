@@ -21,7 +21,7 @@
         <li id="bc-current">العقارات</li>
       </ol>
       <h1 id="ph-title">العقارات</h1>
-      <p class="lead" id="ph-lead">استخدم التصفية لتجد العقار المناسب حسب المحافظة والمدينة ونوع العقار وعدد الغرف.</p>
+      <p class="lead" id="ph-lead">اختر المحافظة والمنطقة ونوع العقار لتضييق النتائج.</p>
       <div class="deal-tabs" role="tablist" aria-label="نوع العرض">
         <button type="button" role="tab" data-deal="" aria-selected="true">الكل</button>
         <button type="button" role="tab" data-deal="sale" aria-selected="false">للبيع</button>
@@ -40,7 +40,7 @@
       </div>
       <form id="filter-form" class="filters-form">
         <div class="field">
-          <label for="f-q">بحث بالكلمات</label>
+          <label for="f-q">بحث بكلمة</label>
           <input id="f-q" name="q" type="search" placeholder="مثال: إطلالة بحرية، مسبح">
         </div>
         <div class="field">
@@ -102,9 +102,9 @@
             <label for="sort">ترتيب</label>
             <select id="sort">
               <option value="new">الأحدث</option>
-              <option value="price-asc">السعر: من الأقل</option>
-              <option value="price-desc">السعر: من الأعلى</option>
-              <option value="size-desc">المساحة: الأكبر أولاً</option>
+              <option value="price-asc">الأقل سعراً</option>
+              <option value="price-desc">الأعلى سعراً</option>
+              <option value="size-desc">الأكبر مساحةً</option>
             </select>
           </div>
         </div>
@@ -113,7 +113,7 @@
       <div class="cards" id="results"></div>
       <div class="empty-state" id="empty" hidden>
         <h3>لا توجد عقارات تطابق بحثك حالياً</h3>
-        <p>جرّب اختيار محافظة أخرى أو إزالة بعض التصفيات، أو اترك طلبك وسنبلغك عند توفر عقار مناسب.</p>
+        <p>جرّب محافظة أخرى أو أزل بعض التصفيات، أو أخبرنا بما تبحث عنه وسنتواصل معك عند توفّر عقار مناسب.</p>
         <div class="cta-actions">
           <button type="button" class="btn btn-ghost" id="empty-reset">مسح التصفيات</button>
           <a class="btn btn-primary" href="contact.html">أخبرنا بما تبحث عنه</a>

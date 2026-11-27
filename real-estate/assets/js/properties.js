@@ -109,10 +109,11 @@ window.onSiteReady(function () {
   };
 
   function headings(f) {
-    var what = f.type.length === 1 ? TYPES[f.type[0]] : "عقارات";
+    var PLURAL = { apartment: "شقق", house: "منازل", "arabic-house": "بيوت عربية", villa: "فيلات", chalet: "شاليهات", land: "أراضٍ", farm: "مزارع", shop: "محلات تجارية", office: "مكاتب" };
+    var what = f.type.length === 1 ? (PLURAL[f.type[0]] || TYPES[f.type[0]]) : "عقارات";
     var where = f.place ? " في " + S.placeShort(f.place) : f.gov ? " في " + S.govName(f.gov) : " في سوريا";
     var dealTxt = f.deal === "sale" ? " للبيع" : f.deal === "rent" ? " للإيجار" : " للبيع والإيجار";
-    var title = (f.type.length === 1 ? (f.type[0] === "land" ? "أراضٍ" : what) : what) + dealTxt + where;
+    var title = what + dealTxt + where;
     el("ph-title").textContent = title;
     el("bc-current").textContent = f.deal === "sale" ? "للبيع" : f.deal === "rent" ? "للإيجار" : "العقارات";
     document.querySelectorAll(".page-head [data-deal]").forEach(function (t) {

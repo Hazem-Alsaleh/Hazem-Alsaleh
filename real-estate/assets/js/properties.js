@@ -30,8 +30,6 @@ window.onSiteReady(function () {
     place.value = p.get("place") || "";
     var types = (p.get("type") || "").split(",").filter(Boolean);
     form.querySelectorAll('input[name="type"]').forEach(function (c) { c.checked = types.indexOf(c.value) !== -1; });
-    el("f-pmin").value = p.get("pmin") || "";
-    el("f-pmax").value = p.get("pmax") || "";
     el("f-smin").value = p.get("smin") || "";
     el("f-smax").value = p.get("smax") || "";
     var rooms = p.get("rooms") || "";
@@ -52,8 +50,6 @@ window.onSiteReady(function () {
       gov: gov.value,
       place: place.value,
       type: types,
-      pmin: parseFloat(el("f-pmin").value) || 0,
-      pmax: parseFloat(el("f-pmax").value) || 0,
       smin: parseFloat(el("f-smin").value) || 0,
       smax: parseFloat(el("f-smax").value) || 0,
       rooms: rooms ? Number(rooms.value) || 0 : 0,
@@ -71,8 +67,6 @@ window.onSiteReady(function () {
     if (f.gov) p.set("gov", f.gov);
     if (f.place) p.set("place", f.place);
     if (f.type.length) p.set("type", f.type.join(","));
-    if (f.pmin) p.set("pmin", f.pmin);
-    if (f.pmax) p.set("pmax", f.pmax);
     if (f.smin) p.set("smin", f.smin);
     if (f.smax) p.set("smax", f.smax);
     if (f.rooms) p.set("rooms", f.rooms);
@@ -93,8 +87,6 @@ window.onSiteReady(function () {
     if (f.gov && l.gov !== f.gov) return false;
     if (f.place && l.place !== f.place) return false;
     if (f.type.length && f.type.indexOf(l.type) === -1) return false;
-    if (f.pmin && cmpPrice(l) < f.pmin) return false;
-    if (f.pmax && cmpPrice(l) > f.pmax) return false;
     if (f.smin && l.size < f.smin) return false;
     if (f.smax && l.size > f.smax) return false;
     if (f.rooms && (l.rooms || 0) < f.rooms) return false;
@@ -123,7 +115,6 @@ window.onSiteReady(function () {
     var title = (f.type.length === 1 ? (f.type[0] === "land" ? "أراضٍ" : what) : what) + dealTxt + where;
     el("ph-title").textContent = title;
     el("bc-current").textContent = f.deal === "sale" ? "للبيع" : f.deal === "rent" ? "للإيجار" : "العقارات";
-    el("f-price-label").textContent = f.deal === "rent" ? "الإيجار الشهري ($)" : "السعر ($)";
     document.querySelectorAll(".page-head [data-deal]").forEach(function (t) {
       t.setAttribute("aria-selected", t.getAttribute("data-deal") === f.deal ? "true" : "false");
     });
@@ -142,7 +133,6 @@ window.onSiteReady(function () {
     f.type.forEach(function (t) {
       list.push(chip(TYPES[t], function () { form.querySelector('input[name="type"][value="' + t + '"]').checked = false; }));
     });
-    if (f.pmin || f.pmax) list.push(chip("السعر: " + (f.pmin ? "من $" + S.fmtNum(f.pmin) + " " : "") + (f.pmax ? "حتى $" + S.fmtNum(f.pmax) : ""), function () { el("f-pmin").value = ""; el("f-pmax").value = ""; }));
     if (f.smin || f.smax) list.push(chip("المساحة: " + (f.smin ? "من " + f.smin + " " : "") + (f.smax ? "حتى " + f.smax : "") + " م²", function () { el("f-smin").value = ""; el("f-smax").value = ""; }));
     if (f.rooms) list.push(chip(f.rooms + " غرف أو أكثر", function () { form.querySelector('input[name="rooms"][value=""]').checked = true; }));
     if (f.own) list.push(chip(f.own, function () { own.value = ""; }));

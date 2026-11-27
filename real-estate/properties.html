@@ -21,7 +21,7 @@
         <li id="bc-current">العقارات</li>
       </ol>
       <h1 id="ph-title">العقارات</h1>
-      <p class="lead" id="ph-lead">استخدم التصفية لتجد العقار المناسب حسب المحافظة والمدينة والسعر وعدد الغرف.</p>
+      <p class="lead" id="ph-lead">استخدم التصفية لتجد العقار المناسب حسب المحافظة والمدينة ونوع العقار وعدد الغرف.</p>
       <div class="deal-tabs" role="tablist" aria-label="نوع العرض">
         <button type="button" role="tab" data-deal="" aria-selected="true">الكل</button>
         <button type="button" role="tab" data-deal="sale" aria-selected="false">للبيع</button>
@@ -55,13 +55,6 @@
           <legend>نوع العقار</legend>
           <div class="check-list" id="f-types"></div>
         </fieldset>
-        <div class="field">
-          <span class="label" id="f-price-label">السعر ($)</span>
-          <div class="range">
-            <input id="f-pmin" name="pmin" type="number" min="0" step="any" inputmode="numeric" placeholder="من" aria-label="أقل سعر" dir="ltr">
-            <input id="f-pmax" name="pmax" type="number" min="0" step="any" inputmode="numeric" placeholder="إلى" aria-label="أعلى سعر" dir="ltr">
-          </div>
-        </div>
         <fieldset class="fieldset">
           <legend>عدد الغرف</legend>
           <div class="choice-row">
@@ -120,7 +113,7 @@
       <div class="cards" id="results"></div>
       <div class="empty-state" id="empty" hidden>
         <h3>لا توجد عقارات تطابق بحثك حالياً</h3>
-        <p>جرّب توسيع نطاق السعر أو اختيار محافظة أخرى، أو اترك طلبك وسنبلغك عند توفر عقار مناسب.</p>
+        <p>جرّب اختيار محافظة أخرى أو إزالة بعض التصفيات، أو اترك طلبك وسنبلغك عند توفر عقار مناسب.</p>
         <div class="cta-actions">
           <button type="button" class="btn btn-ghost" id="empty-reset">مسح التصفيات</button>
           <a class="btn btn-primary" href="contact.html">أخبرنا بما تبحث عنه</a>

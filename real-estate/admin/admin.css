@@ -120,7 +120,7 @@ table.data select { min-height: 36px; border: 1.5px solid var(--line); border-ra
 
 .status { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.1rem 0.65rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; }
 .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
-.st-published, .st-done { background: var(--brand-soft); color: var(--brand-text); }
+.st-published, .st-done { background: color-mix(in srgb, var(--accent) 16%, var(--card)); color: var(--accent-strong); }
 .st-draft { background: var(--surface); color: var(--muted); border: 1px solid var(--line); }
 .st-sold { background: color-mix(in srgb, var(--heart) 14%, var(--card)); color: var(--heart); }
 .st-rented { background: color-mix(in srgb, var(--rent) 16%, var(--card)); color: var(--rent); }

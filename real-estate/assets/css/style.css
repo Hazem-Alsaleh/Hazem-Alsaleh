@@ -1,34 +1,37 @@
 /*
  * Layout: rolig redaksjonell layout på 1240px, høyre-til-venstre. Delt hovedfelt (tekst + stort bilde),
  *         firkantede bilder uten filter, seksjoner styrt av typografi, svært lite pynt.
- * Palett: basaltsvart + kalksteinsgrått, dyp damaskusgrønn som eneste farge.
+ * Palett: kjølig offwhite #F0F5F7, mørk grønnsvart #162623, korall #E76F51 på knapper, salvie #577877 som detalj.
  * Skrift: IBM Plex Sans Arabic overalt; Reem Kufi (kufisk) bare i firmanavnet.
  */
 :root {
-  --bg: #ffffff;
-  --surface: #f3f2ee;
+  --bg: #f7fafb;
+  --surface: #f0f5f7;
   --card: #ffffff;
-  --ink: #161615;
-  --ink-2: #3b3a36;
-  --muted: #6d6c66;
-  --line: #e4e2dc;
-  --line-strong: #c8c5bc;
-  --brand: #17483b;
-  --brand-strong: #0f362c;
-  --brand-text: #17483b;
+  --ink: #162623;
+  --ink-2: #34433f;
+  --muted: #5d6d6a;
+  --line: #dde6e9;
+  --line-strong: #c2cfd3;
+  --brand: #e76f51;
+  --brand-strong: #d55b3d;
+  --brand-text: #c4553a;
   --on-brand: #ffffff;
-  --brand-soft: #e6eeea;
-  --accent: #b5864a;
-  --accent-strong: #9c723b;
+  --brand-soft: #fbe7e0;
+  --accent: #577877;
+  --accent-strong: #46625f;
   --on-accent: #ffffff;
   --rent: #2c5a96;
-  --heart: #b42a1e;
-  --footer-bg: #161615;
-  --footer-ink: #ecebe6;
-  --footer-muted: #a19f97;
-  --overlay: rgba(10, 10, 9, 0.9);
-  --shadow-sm: 0 1px 2px rgba(22, 22, 21, 0.06);
-  --shadow: 0 18px 40px rgba(22, 22, 21, 0.10);
+  --heart: #a8231a;
+  --footer-bg: #162623;
+  --footer-ink: #e8efed;
+  --footer-muted: #9db0ad;
+  --band: #e76f51;
+  --on-band: #ffffff;
+  --num: #577877;
+  --overlay: rgba(10, 18, 16, 0.92);
+  --shadow-sm: 0 1px 2px rgba(22, 38, 35, 0.06);
+  --shadow: 0 18px 40px rgba(22, 38, 35, 0.10);
   --radius: 4px;
   --radius-sm: 3px;
   --font-display: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, Arial, sans-serif;
@@ -41,27 +44,30 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #121211;
-    --surface: #1b1b19;
-    --card: #1b1b19;
-    --ink: #eeede8;
-    --ink-2: #d2d0c9;
-    --muted: #a3a199;
-    --line: #2d2d2a;
-    --line-strong: #46453f;
-    --brand: #5fae93;
-    --brand-strong: #79c2a8;
-    --brand-text: #79c2a8;
-    --on-brand: #0d1a15;
-    --brand-soft: #1c2d27;
-    --accent: #d1a46a;
-    --accent-strong: #e0b880;
-    --on-accent: #1a1206;
+    --bg: #0f1716;
+    --surface: #162120;
+    --card: #162120;
+    --ink: #e7eeec;
+    --ink-2: #c6d2cf;
+    --muted: #93a5a1;
+    --line: #26332f;
+    --line-strong: #3d4c48;
+    --brand: #ef8468;
+    --brand-strong: #f49c84;
+    --brand-text: #f49c84;
+    --on-brand: #1b100c;
+    --brand-soft: #3a231c;
+    --accent: #86a9a6;
+    --accent-strong: #a0bfbc;
+    --on-accent: #0f1716;
     --rent: #8db0ea;
     --heart: #f0806f;
-    --footer-bg: #0b0b0a;
-    --footer-ink: #ecebe6;
-    --footer-muted: #9a988f;
+    --footer-bg: #0a1110;
+    --footer-ink: #e7eeec;
+    --footer-muted: #8fa29e;
+    --band: #c4553a;
+    --on-band: #ffffff;
+    --num: #86a9a6;
     --overlay: rgba(0, 0, 0, 0.92);
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
     --shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
@@ -69,27 +75,30 @@
   }
 }
 :root[data-theme="dark"] {
-  --bg: #121211;
-  --surface: #1b1b19;
-  --card: #1b1b19;
-  --ink: #eeede8;
-  --ink-2: #d2d0c9;
-  --muted: #a3a199;
-  --line: #2d2d2a;
-  --line-strong: #46453f;
-  --brand: #5fae93;
-  --brand-strong: #79c2a8;
-  --brand-text: #79c2a8;
-  --on-brand: #0d1a15;
-  --brand-soft: #1c2d27;
-  --accent: #d1a46a;
-  --accent-strong: #e0b880;
-  --on-accent: #1a1206;
+  --bg: #0f1716;
+  --surface: #162120;
+  --card: #162120;
+  --ink: #e7eeec;
+  --ink-2: #c6d2cf;
+  --muted: #93a5a1;
+  --line: #26332f;
+  --line-strong: #3d4c48;
+  --brand: #ef8468;
+  --brand-strong: #f49c84;
+  --brand-text: #f49c84;
+  --on-brand: #1b100c;
+  --brand-soft: #3a231c;
+  --accent: #86a9a6;
+  --accent-strong: #a0bfbc;
+  --on-accent: #0f1716;
   --rent: #8db0ea;
   --heart: #f0806f;
-  --footer-bg: #0b0b0a;
-  --footer-ink: #ecebe6;
-  --footer-muted: #9a988f;
+  --footer-bg: #0a1110;
+  --footer-ink: #e7eeec;
+  --footer-muted: #8fa29e;
+  --band: #c4553a;
+  --on-band: #ffffff;
+  --num: #86a9a6;
   --overlay: rgba(0, 0, 0, 0.92);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
@@ -400,13 +409,13 @@ bdi.amount, .num { font-variant-numeric: tabular-nums; }
 /* ---------- prosess ---------- */
 .process { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2rem; counter-reset: step; }
 .process li { counter-increment: step; display: grid; gap: 0.5rem; align-content: start; padding-top: 1.2rem; border-top: 1px solid var(--ink); }
-.process li::before { content: counter(step); font-family: var(--font-display); font-size: 2.4rem; line-height: 1; color: var(--brand-text); font-weight: 500; }
+.process li::before { content: counter(step); font-family: var(--font-display); font-size: 2.4rem; line-height: 1; color: var(--num); font-weight: 500; }
 .process p { color: var(--muted); font-size: 0.95rem; }
 @media (max-width: 1000px) { .process { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2.25rem 2rem; } }
 @media (max-width: 560px) { .process { grid-template-columns: 1fr; } }
 .steps { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2rem; counter-reset: step; }
 .step { counter-increment: step; display: grid; gap: 0.5rem; align-content: start; padding-top: 1.2rem; border-top: 1px solid var(--ink); }
-.step::before { content: counter(step); font-family: var(--font-display); font-size: 2.4rem; line-height: 1; color: var(--brand-text); font-weight: 500; }
+.step::before { content: counter(step); font-family: var(--font-display); font-size: 2.4rem; line-height: 1; color: var(--num); font-weight: 500; }
 .step p { color: var(--muted); font-size: 0.95rem; }
 @media (max-width: 1000px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2.25rem 2rem; } }
 @media (max-width: 560px) { .steps { grid-template-columns: 1fr; } }
@@ -432,10 +441,10 @@ bdi.amount, .num { font-variant-numeric: tabular-nums; }
 .faq details > div { padding-bottom: 1.3rem; color: var(--ink-2); display: grid; gap: 0.6rem; max-width: 68ch; }
 
 /* ---------- avsluttende oppfordring ---------- */
-.closing { background: var(--brand); color: var(--on-brand); }
+.closing { background: var(--band); color: var(--on-band); }
 .closing-inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem 3rem; flex-wrap: wrap; padding-block: clamp(3rem, 2rem + 3vw, 4.5rem); }
-.closing h2 { color: var(--on-brand); max-width: 22ch; }
-.closing p { margin-top: 0.6rem; opacity: 0.85; max-width: 52ch; }
+.closing h2 { color: var(--on-band); max-width: 22ch; }
+.closing p { margin-top: 0.6rem; max-width: 52ch; }
 .cta-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 .cta-strip { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; padding-block: 2rem; border-block: 1px solid var(--line); }
 .cta-strip p { color: var(--muted); margin-top: 0.35rem; }

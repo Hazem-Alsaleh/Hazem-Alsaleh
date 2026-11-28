@@ -1,40 +1,49 @@
 /*
  * Layout: rolig redaksjonell layout på 1240px, høyre-til-venstre. Delt hovedfelt (tekst + stort bilde),
  *         firkantede bilder uten filter, seksjoner styrt av typografi, svært lite pynt.
- * Palett: kjølig offwhite #F0F5F7, mørk grønnsvart #162623, korall #E76F51 på knapper, salvie #577877 som detalj.
+ * Palett: dyp grønnblå #1E5B61 på store flater, mint #A6DCCB på mørk bakgrunn, hvit og lys grå #F2F4F5,
+ *         korall #E76F51 bare på hovedknapper, logo-døra og aktiv meny.
  * Skrift: IBM Plex Sans Arabic overalt; Reem Kufi (kufisk) bare i firmanavnet.
  */
 :root {
-  --bg: #f7fafb;
-  --surface: #f0f5f7;
+  --bg: #ffffff;
+  --surface: #f2f4f5;
   --card: #ffffff;
-  --ink: #162623;
-  --ink-2: #34433f;
-  --muted: #5d6d6a;
-  --line: #dde6e9;
-  --line-strong: #c2cfd3;
+  --ink: #1c2b2e;
+  --ink-2: #3a4a4d;
+  --muted: #5c6b6e;
+  --line: #dfe5e7;
+  --line-strong: #c3ced1;
   --brand: #e76f51;
   --brand-strong: #d55b3d;
-  --brand-text: #c4553a;
+  --brand-text: #1e5b61;
   --on-brand: #ffffff;
-  --brand-soft: #fbe7e0;
-  --accent: #577877;
-  --accent-strong: #46625f;
-  --on-accent: #ffffff;
+  --brand-soft: #d6efe7;
+  --accent: #a6dccb;
+  --accent-strong: #1e5b61;
+  --on-accent: #1c2b2e;
   --rent: #2c5a96;
   --heart: #a8231a;
-  --footer-bg: #162623;
-  --footer-ink: #e8efed;
-  --footer-muted: #9db0ad;
-  --band: #e76f51;
+  --footer-bg: #1e5b61;
+  --footer-ink: #b9e4d7;
+  --footer-muted: #d6e6e2;
+  --footer-deep: #133a40;
+  --band: #b5492f;
   --on-band: #ffffff;
-  --num: #577877;
-  --top-bg: #b5492f;
-  --top-ink: #ffffff;
-  --top-hover: #fbe7e0;
-  --overlay: rgba(10, 18, 16, 0.92);
-  --shadow-sm: 0 1px 2px rgba(22, 38, 35, 0.06);
-  --shadow: 0 18px 40px rgba(22, 38, 35, 0.10);
+  --num: #1e5b61;
+  --top-bg: #133a40;
+  --top-ink: #d6efe7;
+  --top-hover: #ffffff;
+  --head-bg: #1e5b61;
+  --head-ink: #ffffff;
+  --head-ink-2: #d6efe7;
+  --head-muted: #a6dccb;
+  --head-line: rgba(255, 255, 255, 0.35);
+  --mint: #a6dccb;
+  --nav-ink: #1e5b61;
+  --overlay: rgba(10, 20, 22, 0.92);
+  --shadow-sm: 0 1px 2px rgba(28, 43, 46, 0.06);
+  --shadow: 0 18px 40px rgba(28, 43, 46, 0.10);
   --radius: 4px;
   --radius-sm: 3px;
   --font-display: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, Arial, sans-serif;
@@ -47,33 +56,41 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0f1716;
-    --surface: #162120;
-    --card: #162120;
-    --ink: #e7eeec;
-    --ink-2: #c6d2cf;
-    --muted: #93a5a1;
-    --line: #26332f;
-    --line-strong: #3d4c48;
+    --bg: #0f1a1c;
+    --surface: #142326;
+    --card: #152629;
+    --ink: #e6eeee;
+    --ink-2: #c5d3d3;
+    --muted: #93a6a7;
+    --line: #233639;
+    --line-strong: #3a4f52;
     --brand: #ef8468;
     --brand-strong: #f49c84;
-    --brand-text: #f49c84;
+    --brand-text: #8fd3c1;
     --on-brand: #1b100c;
-    --brand-soft: #3a231c;
-    --accent: #86a9a6;
-    --accent-strong: #a0bfbc;
-    --on-accent: #0f1716;
+    --brand-soft: #1d3b3a;
+    --accent: #8fd3c1;
+    --accent-strong: #a6dccb;
+    --on-accent: #0f1a1c;
     --rent: #8db0ea;
     --heart: #f0806f;
-    --footer-bg: #0a1110;
-    --footer-ink: #e7eeec;
-    --footer-muted: #8fa29e;
-    --band: #c4553a;
+    --footer-bg: #0d2a2e;
+    --footer-ink: #a6dccb;
+    --footer-muted: #b4c9c5;
+    --footer-deep: #081d20;
+    --band: #8f3a26;
     --on-band: #ffffff;
-    --num: #86a9a6;
-    --top-bg: #8f3a26;
-    --top-ink: #ffffff;
-    --top-hover: #fbe7e0;
+    --num: #8fd3c1;
+    --top-bg: #081d20;
+    --top-ink: #d6efe7;
+    --top-hover: #ffffff;
+    --head-bg: #174a4f;
+    --head-ink: #ffffff;
+    --head-ink-2: #d6efe7;
+    --head-muted: #a6dccb;
+    --head-line: rgba(255, 255, 255, 0.3);
+    --mint: #a6dccb;
+    --nav-ink: #e6eeee;
     --overlay: rgba(0, 0, 0, 0.92);
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
     --shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
@@ -81,33 +98,41 @@
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0f1716;
-  --surface: #162120;
-  --card: #162120;
-  --ink: #e7eeec;
-  --ink-2: #c6d2cf;
-  --muted: #93a5a1;
-  --line: #26332f;
-  --line-strong: #3d4c48;
+  --bg: #0f1a1c;
+  --surface: #142326;
+  --card: #152629;
+  --ink: #e6eeee;
+  --ink-2: #c5d3d3;
+  --muted: #93a6a7;
+  --line: #233639;
+  --line-strong: #3a4f52;
   --brand: #ef8468;
   --brand-strong: #f49c84;
-  --brand-text: #f49c84;
+  --brand-text: #8fd3c1;
   --on-brand: #1b100c;
-  --brand-soft: #3a231c;
-  --accent: #86a9a6;
-  --accent-strong: #a0bfbc;
-  --on-accent: #0f1716;
+  --brand-soft: #1d3b3a;
+  --accent: #8fd3c1;
+  --accent-strong: #a6dccb;
+  --on-accent: #0f1a1c;
   --rent: #8db0ea;
   --heart: #f0806f;
-  --footer-bg: #0a1110;
-  --footer-ink: #e7eeec;
-  --footer-muted: #8fa29e;
-  --band: #c4553a;
+  --footer-bg: #0d2a2e;
+  --footer-ink: #a6dccb;
+  --footer-muted: #b4c9c5;
+  --footer-deep: #081d20;
+  --band: #8f3a26;
   --on-band: #ffffff;
-  --num: #86a9a6;
-  --top-bg: #8f3a26;
-  --top-ink: #ffffff;
-  --top-hover: #fbe7e0;
+  --num: #8fd3c1;
+  --top-bg: #081d20;
+  --top-ink: #d6efe7;
+  --top-hover: #ffffff;
+  --head-bg: #174a4f;
+  --head-ink: #ffffff;
+  --head-ink-2: #d6efe7;
+  --head-muted: #a6dccb;
+  --head-line: rgba(255, 255, 255, 0.3);
+  --mint: #a6dccb;
+  --nav-ink: #e6eeee;
   --overlay: rgba(0, 0, 0, 0.92);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
@@ -695,8 +720,8 @@ bdi.amount, .num { font-variant-numeric: tabular-nums; }
 .footer-contact li { display: flex; gap: 0.55rem; align-items: flex-start; color: var(--footer-muted); }
 .footer-contact .icon { margin-top: 0.35rem; }
 .footer-contact + .btn { margin-top: 1.4rem; }
-.site-footer .btn-accent { background: #fff; color: #161615; }
-.site-footer .btn-accent:hover { background: #e8e6e0; }
+.site-footer .btn-accent { background: var(--mint); color: #133a40; }
+.site-footer .btn-accent:hover { background: #fff; }
 .brand-light .brand-name { color: #fff; font-size: 1.6rem; }
 .brand-light .brand-tag { color: var(--footer-muted); }
 .footer-bottom { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; border-top: 1px solid rgba(255, 255, 255, 0.12); margin-top: 3rem; padding-block: 1.3rem calc(env(safe-area-inset-bottom, 0px) + 1.3rem); }
@@ -741,3 +766,24 @@ bdi.amount, .num { font-variant-numeric: tabular-nums; }
 .skip-link { position: absolute; top: 0; inset-inline-start: 0; z-index: 200; padding: 0.6rem 1rem; background: var(--ink); color: var(--bg); transform: translateY(-120%); }
 .skip-link:focus { transform: none; }
 main:focus { outline: none; }
+
+/* ---------- grønnblå topp og bunn, mint og litt korall ---------- */
+.site-header .brand { color: var(--nav-ink); }
+.main-nav a { color: var(--nav-ink); }
+.hero-copy, .page-head { background: var(--head-bg); }
+.hero, .page-head { border-bottom-color: transparent; }
+.hero h1, .page-head h1 { color: var(--head-ink); }
+.hero-lead, .page-head .lead { color: var(--head-ink-2); }
+.page-head .breadcrumb, .page-head .breadcrumb a { color: var(--head-muted); }
+.hero .deal-tabs button, .hero .deal-tabs a, .page-head .deal-tabs button, .page-head .deal-tabs a { color: var(--head-muted); }
+.hero .deal-tabs button:hover, .page-head .deal-tabs button:hover, .page-head .deal-tabs a:hover { color: var(--head-ink); }
+.hero .deal-tabs [aria-selected="true"], .page-head .deal-tabs [aria-selected="true"], .page-head .deal-tabs [aria-current="page"] { color: var(--head-ink); border-bottom-color: var(--mint); }
+.hero .quick-links, .page-head .quick-links { color: var(--head-muted); }
+.hero .quick-links a, .page-head .quick-links a, .page-head .text-link { color: var(--mint); text-decoration-color: var(--head-line); }
+.hero .quick-links a:hover, .page-head .quick-links a:hover, .page-head .text-link:hover { text-decoration-color: var(--mint); }
+.hero .search-bar, .page-head .search-bar { border: 0; }
+.hero :focus-visible, .page-head :focus-visible, .topbar :focus-visible, .site-footer :focus-visible { outline-color: var(--mint); }
+.hero .search-bar :focus-visible, .page-head .search-bar :focus-visible { outline-color: var(--ink); }
+.site-footer ul a { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(166, 220, 203, 0.4); }
+.site-footer ul a:hover { text-decoration-color: currentColor; }
+.footer-bottom { background: var(--footer-deep); box-shadow: 0 0 0 100vmax var(--footer-deep); clip-path: inset(0 -100vmax); border-top: 0; }

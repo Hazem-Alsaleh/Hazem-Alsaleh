@@ -11,12 +11,36 @@ En arabisk nettside for salg og utleie av boliger i alle Syrias 14 provinser. Te
 | `rent.html` | Leie og utleie (الإيجار): søk, nyeste utleieboliger, leietakerguide, utleieprosess og skjema for å leie ut |
 | `properties.html`, `property.html` | Søkeresultater (alltid enten salg eller leie) og boligside |
 | `agents.html`, `contact.html` | Meglere og kontakt |
+| `map.html` | Interaktivt kart over Syria (خريطة سوريا), se under |
 | `sell.html` | Gammel adresse, sender videre til `sale.html` |
 | `admin/` | Administrasjonspanelet (`/admin/`) |
 | `server/` | Node.js-server (Express) med API, innlogging og bildeopplasting |
 | `assets/js/config.js`, `locations.js`, `listings.js` | Startdata og lister over provinser, byer, boligtyper osv. |
+| `assets/map/`, `assets/vendor/leaflet/`, `tools/build-map-data.js` | Kartdata, kartbiblioteket Leaflet og skriptet som lager kartdataene |
 | `data/` | Opprettes ved første start. Her lagres boliger, meglere, innstillinger, henvendelser og brukere (JSON-filer). Ikke i git. |
 | `uploads/` | Bilder lastet opp fra panelet. Ikke i git. |
+
+## Kartet over Syria (`map.html`)
+
+Kartet ligger i menyen som «خريطة سوريا», mellom «الوسطاء» og «اتصل بنا». Det er bare på arabisk.
+
+- **Provinsene** er farget etter hvor mange boliger som er lagt ut der, og viser antallet. Velg «للبيع» eller «للإيجار» for å se bare salg eller leie.
+- **Klikk på en provins** for å se underdistriktene (النواحي), byene og landsbyene, boligene i provinsen, megleren som har området, og knapper rett til søket.
+- **Boligene** vises som nåler med pris: korall for salg og grønnblå for leie. Klikk på en nål for å se boligen.
+- **Søkefeltet** finner alle 7 636 byer, landsbyer og bydeler i Syria.
+- **«قمر صناعي»** viser satellittbilder. Standard er det lette kartet, som laster raskt også på trege nett.
+- Adressen oppdateres når du velger noe, så du kan dele en lenke direkte til en provins eller et sted, for eksempel `map.html#aleppo`.
+
+Boliger plasseres på kartet etter stedet de er lagt inn med (by eller bydel). 314 av de 317 stedene i listen har koordinater. Resten, og steder som legges til senere, vises midt i provinsen. Punktene for bydelene i Damaskus er omtrentlige.
+
+**Kilder** (vises under «مصادر الخريطة» på kartet, og må beholdes):
+- Grenser for provinser og underdistrikter: OCHA COD-AB, CC BY 3.0 IGO
+- Byer og landsbyer: OCHA, OpenSyria og GeoNames, CC BY
+- Nabolandene: Natural Earth
+- Satellittbilder: EOxCloudless 2016 (oversiktsbildet i `assets/map/`) og ESA WorldCover 2021, CC BY 4.0. De detaljerte satellittbildene hentes fra `wmts.terrascope.be` og `tiles.maps.eox.at`, som derfor er tillatt i sikkerhetsreglene for bilder.
+- Kartbiblioteket Leaflet 1.9.4 (BSD-lisens), hentet fra den offisielle utgaven
+
+Kartdataene er laget fra «syria-atlas»-pakken med `node tools/build-map-data.js /sti/til/syria-atlas/data`. Skriptet beholder bare arabiske navn og finner koordinater til stedene i `assets/js/locations.js`. Kjør det på nytt hvis du legger til nye steder i den listen.
 
 ## Starte med administrasjonspanelet
 

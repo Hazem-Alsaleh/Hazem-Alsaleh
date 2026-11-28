@@ -18,7 +18,8 @@ const CSP = [
   "script-src 'self'",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
-  "img-src 'self' data: blob:",
+  // satellittbilder på kartsiden (map.html)
+  "img-src 'self' data: blob: https://wmts.terrascope.be https://tiles.maps.eox.at",
   "connect-src 'self'",
   "object-src 'none'",
   "base-uri 'self'",
@@ -29,7 +30,7 @@ const CSP = [
 const PUBLIC_SETTINGS = ["companyName", "tagline", "slogan", "phone", "whatsapp", "email", "address", "workingHours", "offices", "social", "defaultCurrency", "showSampleNotice"];
 const SETTINGS_DEFAULTS = { notifyEnabled: false, notifyAgent: true, notifyEmails: [] };
 
-const PUBLIC_PAGES = ["index.html", "properties.html", "property.html", "sale.html", "rent.html", "sell.html", "agents.html", "contact.html"];
+const PUBLIC_PAGES = ["index.html", "properties.html", "property.html", "sale.html", "rent.html", "sell.html", "agents.html", "map.html", "contact.html"];
 const IMAGE_TYPES = {
   "image/jpeg": { ext: "jpg", check: (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff },
   "image/png": { ext: "png", check: (b) => b.slice(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) },
@@ -375,7 +376,7 @@ function createApp(options) {
   app.get("/sitemap.xml", (req, res) => {
     if (!siteUrl) return res.status(404).type("text/plain").send("SITE_URL not set");
     const xmlEsc = (x) => String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    const pages = ["", "sale.html", "rent.html", "properties.html?deal=sale", "properties.html?deal=rent", "agents.html", "contact.html"].map((p) => ({ loc: p }));
+    const pages = ["", "sale.html", "rent.html", "properties.html?deal=sale", "properties.html?deal=rent", "agents.html", "map.html", "contact.html"].map((p) => ({ loc: p }));
     store.list("listings").filter((l) => l.status === "published").forEach((l) => {
       pages.push({ loc: "property.html?id=" + l.id, lastmod: String(l.updatedAt || l.date || "").slice(0, 10) });
     });

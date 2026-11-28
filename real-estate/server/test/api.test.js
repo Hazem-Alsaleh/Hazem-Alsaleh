@@ -208,6 +208,22 @@ test("security headers, redirects and robots", async () => {
   assert.strictEqual(adminApi.headers.get("cache-control"), "no-store");
 });
 
+test("map page and its data are served", async () => {
+  const page = await fetch(base + "/map.html");
+  assert.strictEqual(page.status, 200);
+  const html = await page.text();
+  assert.match(html, /id="atlas-map"/);
+  assert.match(html, /<title>خريطة سوريا \| /);
+  const csp = page.headers.get("content-security-policy") || "";
+  assert.match(csp, /img-src 'self' data: blob: https:\/\/wmts\.terrascope\.be https:\/\/tiles\.maps\.eox\.at/);
+  const data = await (await fetch(base + "/assets/map/syria.json")).json();
+  assert.strictEqual(data.govs.length, 14);
+  const gov = await (await fetch(base + "/assets/map/gov/aleppo.json")).json();
+  assert.ok(gov.subs.length > 30);
+  const sm = await (await fetch(base + "/sitemap.xml")).text();
+  assert.match(sm, /map\.html/);
+});
+
 test("link previews escape listing data", async () => {
   const r = await call("POST", "/api/admin/listings", {
     deal: "sale", type: "apartment", title: '"><script>alert(1)</script>', gov: "damascus", place: "المزة",

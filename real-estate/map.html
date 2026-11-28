@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>خريطة سوريا | اسم الشركة</title>
+<meta name="description" content="خريطة تفاعلية لسوريا: المحافظات والنواحي والمدن والقرى، مع العقارات المعروضة للبيع والإيجار في كل منطقة.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Reem+Kufi:wght@700&display=swap">
+<link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<meta name="theme-color" content="#133a40">
+</head>
+<body data-page="map">
+<div id="site-header"></div>
+
+<main class="map-page">
+  <h1 class="sr-only">خريطة سوريا</h1>
+  <div class="sr-only" id="atlas-status" role="status" aria-live="polite"></div>
+  <div class="atlas">
+    <aside class="atlas-panel" id="atlas-panel" aria-label="تفاصيل المنطقة">
+      <div class="atlas-panel-top">
+        <nav class="atlas-crumbs" id="atlas-crumbs" aria-label="مسار التنقل في الخريطة"></nav>
+        <div class="atlas-search">
+          <label class="sr-only" for="atlas-q">ابحث عن مدينة أو بلدة أو حي</label>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="atlas-q" type="search" autocomplete="off" spellcheck="false" placeholder="ابحث عن مدينة أو بلدة أو حي" role="combobox" aria-expanded="false" aria-controls="atlas-results" aria-autocomplete="list">
+          <ul class="atlas-results" id="atlas-results" role="listbox" hidden></ul>
+        </div>
+        <div class="atlas-deal" role="radiogroup" aria-label="نوع العرض">
+          <button type="button" role="radio" data-deal="all" aria-checked="true">كل العقارات</button>
+          <button type="button" role="radio" data-deal="sale" aria-checked="false">للبيع</button>
+          <button type="button" role="radio" data-deal="rent" aria-checked="false">للإيجار</button>
+        </div>
+      </div>
+      <div class="atlas-panel-body" id="atlas-body">
+        <p class="atlas-loading">جارٍ تحميل الخريطة…</p>
+      </div>
+    </aside>
+
+    <section class="atlas-stage" aria-label="الخريطة">
+      <div id="atlas-map" class="atlas-map"></div>
+      <div class="atlas-layers" role="radiogroup" aria-label="شكل الخريطة">
+        <button type="button" role="radio" data-layer="map" aria-checked="true">خريطة</button>
+        <button type="button" role="radio" data-layer="sat" aria-checked="false">قمر صناعي</button>
+      </div>
+      <div class="atlas-tools">
+        <button type="button" class="atlas-tool" id="atlas-in" aria-label="تكبير"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+        <button type="button" class="atlas-tool" id="atlas-out" aria-label="تصغير"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
+        <button type="button" class="atlas-tool" id="atlas-fit" aria-label="عرض سوريا كاملة"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3H4v4M16 3h4v4M4 17v4h4M16 21h4v-4"/></svg></button>
+      </div>
+      <div class="atlas-legend" id="atlas-legend" aria-hidden="true"></div>
+      <button type="button" class="atlas-peek" id="atlas-peek" hidden></button>
+    </section>
+  </div>
+
+  <dialog class="atlas-dialog" id="atlas-sources" aria-labelledby="atlas-sources-title">
+    <div class="atlas-dialog-head">
+      <h2 id="atlas-sources-title">مصادر الخريطة</h2>
+      <button type="button" class="icon-btn" id="atlas-sources-close" aria-label="إغلاق"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <ul>
+      <li>حدود المحافظات والنواحي: <a href="https://data.humdata.org/dataset/cod-ab-syr" target="_blank" rel="noopener">OCHA COD-AB</a>، برخصة CC BY 3.0 IGO.</li>
+      <li>أسماء المدن والقرى ومواقعها: <a href="https://data.humdata.org/dataset/syrian-arab-republic-pop-places" target="_blank" rel="noopener">OCHA</a> و<a href="https://opensyria.org/datasets/geography" target="_blank" rel="noopener">OpenSyria</a> و<a href="https://www.geonames.org/" target="_blank" rel="noopener">GeoNames</a>، برخصة CC BY.</li>
+      <li>الدول المجاورة: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a>.</li>
+      <li>صور الأقمار الصناعية: <a href="https://cloudless.eox.at/" target="_blank" rel="noopener">EOxCloudless</a> (Sentinel-2، 2016) و<a href="https://esa-worldcover.org/" target="_blank" rel="noopener">ESA WorldCover</a> (2021)، برخصة CC BY 4.0.</li>
+      <li>مواقع أحياء دمشق تقريبية.</li>
+      <li>مكتبة الخرائط: <a href="https://leafletjs.com/" target="_blank" rel="noopener">Leaflet</a>.</li>
+    </ul>
+  </dialog>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/locations.js"></script>
+<script src="assets/js/listings.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/vendor/leaflet/leaflet.js"></script>
+<script src="assets/js/map.js"></script>
+</body>
+</html>

@@ -254,6 +254,7 @@
     { href: "sale.html", label: "البيع والشراء", key: "sale" },
     { href: "rent.html", label: "الإيجار", key: "rent" },
     { href: "agents.html", label: "الوسطاء", key: "agents" },
+    { href: "map.html", label: "خريطة سوريا", key: "map" },
     { href: "contact.html", label: "اتصل بنا", key: "contact" }
   ];
 

@@ -10,7 +10,7 @@ const path = require("path");
 class Store {
   constructor(dir) {
     this.dir = dir;
-    fs.mkdirSync(dir, { recursive: true });
+    fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
     this.cache = new Map();
   }
 
@@ -18,21 +18,25 @@ class Store {
 
   exists(name) { return fs.existsSync(this.file(name)); }
 
+  /* Leser fra minnet, men laster filen på nytt hvis den er endret utenfra
+     (for eksempel når «npm run create-admin» bytter passord mens serveren kjører). */
   read(name, fallback) {
-    if (this.cache.has(name)) return this.cache.get(name);
-    let value = fallback;
     const f = this.file(name);
-    if (fs.existsSync(f)) value = JSON.parse(fs.readFileSync(f, "utf8"));
-    this.cache.set(name, value);
+    let mtime = 0;
+    try { mtime = fs.statSync(f).mtimeMs; } catch (e) { mtime = 0; }
+    const c = this.cache.get(name);
+    if (c && c.mtime === mtime) return c.value;
+    const value = mtime ? JSON.parse(fs.readFileSync(f, "utf8")) : fallback;
+    this.cache.set(name, { value, mtime });
     return value;
   }
 
   write(name, value) {
-    this.cache.set(name, value);
     const f = this.file(name);
     const tmp = f + "." + process.pid + ".tmp";
-    fs.writeFileSync(tmp, JSON.stringify(value, null, 2));
+    fs.writeFileSync(tmp, JSON.stringify(value, null, 2), { mode: 0o600 });
     fs.renameSync(tmp, f);
+    this.cache.set(name, { value, mtime: fs.statSync(f).mtimeMs });
     return value;
   }
 

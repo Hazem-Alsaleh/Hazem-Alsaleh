@@ -10,6 +10,21 @@ const { createAuth, hashPassword, verifyPassword, validatePassword, publicUser }
 const { validateListing, validateAgent, validateSettings, validateInquiry, parseEmails } = require("./lib/validate");
 const { createMailer } = require("./lib/mailer");
 const { buildInquiryEmail, buildTestEmail, recipientsFor } = require("./lib/notify");
+const { renderPage, listingMeta } = require("./lib/meta");
+
+/* Content-Security-Policy: bare egne skript, Google Fonts for skrift, ingen innramming av siden */
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self'",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' https://fonts.gstatic.com",
+  "img-src 'self' data: blob:",
+  "connect-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'"
+].join("; ");
 
 const PUBLIC_SETTINGS = ["companyName", "tagline", "slogan", "phone", "whatsapp", "email", "address", "workingHours", "offices", "social", "defaultCurrency", "showSampleNotice"];
 const SETTINGS_DEFAULTS = { notifyEnabled: false, notifyAgent: true, notifyEmails: [] };
@@ -25,7 +40,7 @@ function createApp(options) {
   options = options || {};
   const dataDir = options.dataDir || path.join(ROOT, "data");
   const uploadsDir = options.uploadsDir || path.join(ROOT, "uploads");
-  fs.mkdirSync(uploadsDir, { recursive: true });
+  fs.mkdirSync(uploadsDir, { recursive: true, mode: 0o755 });
 
   const store = new Store(dataDir);
 
@@ -47,9 +62,25 @@ function createApp(options) {
   app.disable("x-powered-by");
   if (options.trustProxy) app.set("trust proxy", options.trustProxy);
 
+  let warnedProxy = false;
   app.use((req, res, next) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+    res.setHeader("Content-Security-Policy", CSP);
+    res.setHeader("X-Frame-Options", "DENY");
+    res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()");
+    res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+    if (req.secure) res.setHeader("Strict-Transport-Security", "max-age=15552000");
+    // bak en proxy uten TRUST_PROXY ser alle besøkende ut til å ha samme IP (påvirker grensene for innlogging og skjemaer)
+    if (!options.trustProxy && !warnedProxy && req.headers["x-forwarded-for"]) {
+      warnedProxy = true;
+      console.warn("تنبيه: الخادم يعمل خلف وكيل (proxy). اضبط TRUST_PROXY=1 حتى تُحسب حدود الطلبات لكل زائر على حدة.");
+    }
+    next();
+  });
+  app.use("/api", (req, res, next) => {
+    res.setHeader("X-Robots-Tag", "noindex");
+    if (req.path.indexOf("/admin") === 0) res.setHeader("Cache-Control", "no-store");
     next();
   });
 
@@ -83,6 +114,7 @@ function createApp(options) {
       if (!img.startsWith("uploads/") || used.has(img)) return;
       const f = path.join(uploadsDir, path.basename(img));
       fs.rm(f, { force: true }, () => {});
+      fs.rm(f.replace(/\.(jpg|png|webp)$/, "-t.jpg"), { force: true }, () => {}); // liten versjon
     });
   }
   /* e-postvarsel sendes i bakgrunnen; resultatet lagres på henvendelsen (sent / failed / off) */
@@ -126,6 +158,7 @@ function createApp(options) {
     if (hits.length >= 10) return res.status(429).json({ error: "أرسلت طلبات كثيرة. حاول لاحقاً أو تواصل عبر واتساب." });
     hits.push(now);
     inquiryHits.set(req.ip, hits);
+    if (inquiryHits.size > 5000) inquiryHits.forEach((v, k) => { if (!v.some((t) => now - t < 3600e3)) inquiryHits.delete(k); });
 
     const v = validateInquiry(req.body);
     if (!v.ok) return bad(res, v.errors);
@@ -201,6 +234,15 @@ function createApp(options) {
     const t = IMAGE_TYPES[(req.get("Content-Type") || "").split(";")[0]];
     if (!t || !Buffer.isBuffer(req.body) || req.body.length < 100 || !t.check(req.body)) {
       return res.status(400).json({ error: "الملف ليس صورة مدعومة (JPG أو PNG أو WebP)" });
+    }
+    // ?thumb=<id> lagrer en liten versjon (til boligkortene) ved siden av et bilde som allerede er lastet opp
+    const thumbFor = typeof req.query.thumb === "string" ? req.query.thumb : "";
+    if (thumbFor) {
+      if (!/^[a-f0-9]{24}$/.test(thumbFor) || t.ext !== "jpg" || !["jpg", "png", "webp"].some((e) => fs.existsSync(path.join(uploadsDir, thumbFor + "." + e)))) {
+        return res.status(400).json({ error: "صورة مصغرة غير صالحة" });
+      }
+      fs.writeFileSync(path.join(uploadsDir, thumbFor + "-t.jpg"), req.body);
+      return res.status(201).json({ path: "uploads/" + thumbFor + "-t.jpg" });
     }
     const name = crypto.randomBytes(12).toString("hex") + "." + t.ext;
     fs.writeFileSync(path.join(uploadsDir, name), req.body);
@@ -304,11 +346,42 @@ function createApp(options) {
   const staticOpts = { index: false, dotfiles: "deny", maxAge: "1h" };
   app.use("/assets", express.static(path.join(ROOT, "assets"), staticOpts));
   app.use("/uploads", express.static(uploadsDir, Object.assign({}, staticOpts, { maxAge: "30d" })));
+  app.use("/admin", (req, res, next) => { res.setHeader("X-Robots-Tag", "noindex, nofollow"); next(); });
   app.use("/admin", express.static(path.join(ROOT, "admin"), { index: "index.html", dotfiles: "deny" }));
-  app.get("/", (req, res) => res.sendFile(path.join(ROOT, "index.html")));
+
+  /* Sidene sendes med firmanavn i tittelen og forhåndsvisning (Open Graph) for deling */
+  function sendPage(req, res, page) {
+    const s = settings();
+    let meta = { path: page === "index.html" ? "" : page, image: "assets/img/site-damascus-courtyard.jpg" };
+    if (page === "property.html") {
+      const l = store.get("listings", req.query.id);
+      if (l && l.status === "published") meta = listingMeta(l, s.companyName);
+    }
+    const html = fs.readFileSync(path.join(ROOT, page), "utf8");
+    res.setHeader("Cache-Control", "no-cache");
+    res.type("html").send(renderPage(html, meta, { companyName: s.companyName, siteUrl }));
+  }
+  app.get("/sell.html", (req, res) => res.redirect(301, "/sale.html#valuation"));
+  app.get("/", (req, res) => sendPage(req, res, "index.html"));
   app.get("/:page", (req, res, next) => {
     if (!PUBLIC_PAGES.includes(req.params.page)) return next();
-    res.sendFile(path.join(ROOT, req.params.page));
+    sendPage(req, res, req.params.page);
+  });
+
+  /* For søkemotorer */
+  app.get("/robots.txt", (req, res) => {
+    res.type("text/plain").send("User-agent: *\nDisallow: /admin/\nDisallow: /api/\n" + (siteUrl ? "Sitemap: " + siteUrl + "/sitemap.xml\n" : ""));
+  });
+  app.get("/sitemap.xml", (req, res) => {
+    if (!siteUrl) return res.status(404).type("text/plain").send("SITE_URL not set");
+    const xmlEsc = (x) => String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const pages = ["", "sale.html", "rent.html", "properties.html?deal=sale", "properties.html?deal=rent", "agents.html", "contact.html"].map((p) => ({ loc: p }));
+    store.list("listings").filter((l) => l.status === "published").forEach((l) => {
+      pages.push({ loc: "property.html?id=" + l.id, lastmod: String(l.updatedAt || l.date || "").slice(0, 10) });
+    });
+    res.type("application/xml").send('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+      pages.map((p) => "  <url><loc>" + xmlEsc(siteUrl + "/" + p.loc) + "</loc>" + (p.lastmod ? "<lastmod>" + xmlEsc(p.lastmod) + "</lastmod>" : "") + "</url>").join("\n") +
+      "\n</urlset>\n");
   });
   app.use((req, res) => {
     res.status(404).type("html").send('<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>الصفحة غير موجودة</title><body style="font-family:system-ui,sans-serif;text-align:center;padding:4rem 1rem"><h1>الصفحة غير موجودة</h1><p><a href="/">العودة إلى الصفحة الرئيسية</a></p></body></html>');

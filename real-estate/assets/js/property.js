@@ -38,7 +38,8 @@ window.onSiteReady(function () {
   var shown = l.images.slice(0, 5);
   var gallery = '<div class="gallery n' + Math.min(shown.length, 5) + '">' +
     shown.map(function (im, idx) {
-      return '<button type="button" data-img="' + idx + '" aria-label="عرض الصورة ' + (idx + 1) + '"><img src="' + S.img(im) + '" alt="' + e(l.title) + " — صورة " + (idx + 1) + '"' + (idx ? ' loading="lazy"' : "") + "></button>";
+      var src = idx ? S.thumb(im) : S.img(im);
+      return '<button type="button" data-img="' + idx + '" aria-label="عرض الصورة ' + (idx + 1) + '"><img src="' + src + '" data-full="' + S.img(im) + '" alt="' + e(l.title) + " — صورة " + (idx + 1) + '"' + (idx ? ' loading="lazy"' : "") + "></button>";
     }).join("") +
     (l.images.length > 1 ? '<button type="button" class="gallery-all" data-img="0">' + i("camera") + "عرض كل الصور (" + l.images.length + ")</button>" : "") +
     "</div>";

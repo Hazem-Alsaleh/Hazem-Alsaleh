@@ -115,6 +115,7 @@ window.onSiteReady(function () {
     var dealTxt = f.deal === "rent" ? " للإيجار" : " للبيع";
     var title = what + dealTxt + where;
     el("ph-title").textContent = title;
+    document.title = title + " | " + window.SITE_CONFIG.companyName;
     el("bc-current").innerHTML = f.deal === "rent" ? '<a href="rent.html">الإيجار</a>' : '<a href="sale.html">البيع والشراء</a>';
     document.querySelectorAll(".page-head [data-deal]").forEach(function (t) {
       t.setAttribute("aria-selected", t.getAttribute("data-deal") === f.deal ? "true" : "false");

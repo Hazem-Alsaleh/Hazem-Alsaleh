@@ -47,7 +47,13 @@ const DUMMY_HASH = hashPassword("dummy-password-for-timing");
 
 function createAuth(store, options) {
   const secureCookie = !!(options && options.secureCookie);
-  const failures = new Map(); // ip -> { count, until }
+  // mislykkede innlogginger: per IP + brukernavn (8 forsøk) og per IP (30 forsøk), i 15 minutter.
+  // Nøkkelen med brukernavn gjør at én angriper bak samme proxy ikke kan stenge ute alle andre.
+  const failures = new Map(); // key -> { count, until }
+  const WINDOW = 15 * 60e3;
+
+  /* Secure-flagget settes når siden kjøres over https (direkte eller via proxy med TRUST_PROXY) */
+  function cookieFlags(req) { return "; Path=/; HttpOnly; SameSite=Lax" + (secureCookie || req.secure ? "; Secure" : ""); }
 
   function cleanSessions() {
     const now = Date.now();
@@ -57,13 +63,13 @@ function createAuth(store, options) {
     return alive;
   }
 
-  function startSession(res, user) {
+  function startSession(req, res, user) {
     const token = crypto.randomBytes(32).toString("hex");
     const expires = Date.now() + SESSION_DAYS * 864e5;
     const sessions = cleanSessions();
     sessions.push({ hash: sha256(token), userId: user.id, expires });
     store.write("sessions", sessions);
-    res.setHeader("Set-Cookie", COOKIE + "=" + token + "; Path=/; HttpOnly; SameSite=Lax; Max-Age=" + SESSION_DAYS * 86400 + (secureCookie ? "; Secure" : ""));
+    res.setHeader("Set-Cookie", COOKIE + "=" + token + cookieFlags(req) + "; Max-Age=" + SESSION_DAYS * 86400);
   }
 
   function endSession(req, res) {
@@ -72,7 +78,7 @@ function createAuth(store, options) {
       const h = sha256(token);
       store.write("sessions", store.read("sessions", []).filter((s) => s.hash !== h));
     }
-    res.setHeader("Set-Cookie", COOKIE + "=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0" + (secureCookie ? "; Secure" : ""));
+    res.setHeader("Set-Cookie", COOKIE + "=" + cookieFlags(req) + "; Max-Age=0");
   }
 
   function endAllSessionsFor(userId, exceptHash) {
@@ -102,31 +108,35 @@ function createAuth(store, options) {
     next();
   }
 
-  function tooManyFailures(ip) {
-    const f = failures.get(ip);
-    return f && f.count >= 8 && f.until > Date.now();
+  function blocked(key, max) {
+    const f = failures.get(key);
+    return !!(f && f.count >= max && f.until > Date.now());
   }
-  function recordFailure(ip) {
-    const f = failures.get(ip);
-    if (!f || f.until < Date.now()) failures.set(ip, { count: 1, until: Date.now() + 15 * 60e3 });
+  function bump(key) {
+    const now = Date.now();
+    const f = failures.get(key);
+    if (!f || f.until < now) failures.set(key, { count: 1, until: now + WINDOW });
     else f.count++;
+    if (failures.size > 5000) failures.forEach((v, k) => { if (v.until < now) failures.delete(k); });
   }
 
   function login(req, res) {
     if (req.get("X-Requested-With") !== "aqar-admin") return res.status(403).json({ error: "طلب غير مسموح" });
     const ip = req.ip;
-    if (tooManyFailures(ip)) return res.status(429).json({ error: "محاولات كثيرة. حاول مرة أخرى بعد 15 دقيقة." });
-    const username = String((req.body && req.body.username) || "").trim().toLowerCase();
+    const username = String((req.body && req.body.username) || "").trim().toLowerCase().slice(0, 80);
+    const userKey = "u:" + ip + ":" + username;
+    if (blocked(userKey, 8) || blocked("ip:" + ip, 30)) return res.status(429).json({ error: "محاولات كثيرة. حاول مرة أخرى بعد 15 دقيقة." });
     const password = String((req.body && req.body.password) || "");
     const user = store.list("users").find((u) => u.username === username);
     // نحسب الهاش حتى لو لم يوجد المستخدم حتى لا يكشف التوقيت وجوده
     const ok = verifyPassword(password, user ? user.password : DUMMY_HASH);
     if (!user || !ok) {
-      recordFailure(ip);
+      bump(userKey);
+      bump("ip:" + ip);
       return res.status(401).json({ error: "اسم المستخدم أو كلمة المرور غير صحيحة" });
     }
-    failures.delete(ip);
-    startSession(res, user);
+    failures.delete(userKey);
+    startSession(req, res, user);
     store.update("users", user.id, { lastLogin: new Date().toISOString() });
     res.json({ user: publicUser(user) });
   }

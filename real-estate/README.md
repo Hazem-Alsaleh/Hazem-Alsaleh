@@ -79,16 +79,45 @@ For testing uten e-postserver: sett `MAIL_LOG=1`, så skrives e-postene i termin
 
 ## Sikkerhet
 
-- Passord lagres som scrypt-hash, aldri i klartekst. Innloggingen bruker en httpOnly-cookie, og bare en hash av øktnøkkelen lagres på serveren.
-- Etter 8 mislykkede innlogginger blokkeres IP-adressen i 15 minutter.
-- Endringer i panelet krever en egen header, slik at andre nettsteder ikke kan sende skjemaer inn i panelet.
-- Opplastede filer sjekkes for å være ekte JPG-, PNG- eller WebP-bilder og får tilfeldige navn.
-- Skjemaene på nettsiden har et skjult felt mot spam og en grense på 10 henvendelser per time per IP-adresse.
-- `data/`, `server/` og `package.json` serveres aldri til nettleseren.
+Koden er gjennomgått for sårbarheter (tilgangskontroll, innlogging, CSRF, XSS, filopplasting, e-post og hvilke data som vises offentlig). Ingen alvorlige funn. Tiltakene:
 
-**I produksjon:**
-- Kjør siden over https (f.eks. bak Caddy eller nginx) med `COOKIE_SECURE=1` og `TRUST_PROXY=1`.
-- Ta jevnlig sikkerhetskopi av mappene `data/` og `uploads/`.
+- **Innlogging:**
+  - Passord lagres som scrypt-hash, aldri i klartekst.
+  - Økten ligger i en httpOnly-cookie, og bare en hash av øktnøkkelen lagres på serveren. Cookien får `Secure` automatisk når siden går over https.
+  - Etter 8 feilforsøk på samme brukernavn sperres det brukernavnet i 15 minutter, og etter 30 feilforsøk fra samme IP sperres IP-en. Én angriper kan derfor ikke stenge ute alle andre.
+  - Byttes et passord med `npm run create-admin` mens serveren kjører, gjelder det nye passordet med en gang.
+- **Panelet:**
+  - Alle endringer krever en egen header (beskyttelse mot CSRF).
+  - Svar fra panelet lagres ikke i mellomlager (`Cache-Control: no-store`).
+  - Panelet og API-et er merket `noindex` for søkemotorer.
+- **Sikkerhetshoder på alle sider:**
+  - Content-Security-Policy: bare egne skript, ingen innramming, skrift bare fra Google Fonts.
+  - `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` og `Cross-Origin-Opener-Policy`.
+  - HSTS ved https.
+- **Data:**
+  - `data/` har rettighet 700 og filene 600, så bare brukeren som kjører serveren kan lese dem.
+  - `data/`, `server/`, `.env` og `package.json` sendes aldri til nettleseren.
+  - Det offentlige API-et viser ikke e-postadresser for varsler, meglernes e-post, henvendelser eller brukere.
+- **Opplasting:**
+  - Bare ekte JPG-, PNG- og WebP-bilder godtas (filtype og innhold sjekkes), og filnavnene er tilfeldige.
+  - Bildene forminskes i nettleseren før opplasting, så GPS-posisjon og annen informasjon i bildefilen fjernes.
+- **Skjemaene på nettsiden:** skjult felt mot spam og maks 10 henvendelser per time per IP. Alt som besøkende skriver, escapes i panelet og i e-postene.
+- **Pakker:** `npm audit` fant ingen kjente sårbarheter.
+
+**Sjekkliste for drift:**
+1. Kjør siden over https (for eksempel Caddy eller nginx foran Node) og sett `TRUST_PROXY=1`. Uten den ser alle besøkende ut til å ha samme IP, og grensene for innlogging og skjemaer slår feil. Serveren skriver en advarsel i loggen hvis dette mangler.
+2. Sett `SITE_URL` til den ekte adressen (brukes i e-poster, forhåndsvisning og områdekart).
+3. Bruk lange, unike passord for administratorene, og slett brukere som ikke trenger tilgang.
+4. Ta jevnlig sikkerhetskopi av `data/` og `uploads/`.
+5. Kjør `npm audit` og oppdater pakkene av og til.
+
+## Deling og søkemotorer
+
+- Når en bolig deles på WhatsApp, Facebook eller Telegram, vises en forhåndsvisning med bilde, tittel, pris og sted (Open Graph). Det krever at siden kjøres med serveren og at `SITE_URL` er satt.
+- Firmanavnet settes inn i sidetitlene allerede på serveren.
+- `robots.txt` stenger panelet og API-et for søkemotorer.
+- `sitemap.xml` lister alle sider og publiserte boliger.
+- Boligkortene bruker små bilder (640 px), som laster omtrent fire ganger raskere på trege nett. Bilder som lastes opp i panelet, får automatisk en liten versjon.
 
 ## Miljøvariabler
 
@@ -99,7 +128,7 @@ For testing uten e-postserver: sett `MAIL_LOG=1`, så skrives e-postene i termin
 | `UPLOADS_DIR` | `./uploads` | Hvor bildene lagres |
 | `COOKIE_SECURE` | av | Sett til `1` når siden kjøres over https |
 | `TRUST_PROXY` | av | Sett til `1` når serveren står bak en proxy |
-| `SITE_URL` | – | Nettsidens adresse, brukes i lenkene i e-postvarslene |
+| `SITE_URL` | – | Nettsidens adresse. Brukes i e-postvarslene, i forhåndsvisning ved deling og i `sitemap.xml` |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` | – | E-postserveren for varsler (se over) |
 | `MAIL_LOG` | av | `1` skriver e-postene i terminalen i stedet for å sende dem |
 

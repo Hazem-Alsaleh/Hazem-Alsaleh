@@ -190,6 +190,67 @@ test("email notifications for new inquiries", async () => {
   cookie = saved;
 });
 
+test("security headers, redirects and robots", async () => {
+  const r = await fetch(base + "/");
+  const csp = r.headers.get("content-security-policy") || "";
+  assert.match(csp, /script-src 'self'/);
+  assert.match(csp, /frame-ancestors 'none'/);
+  assert.strictEqual(r.headers.get("x-frame-options"), "DENY");
+  assert.strictEqual(r.headers.get("x-content-type-options"), "nosniff");
+  const sell = await fetch(base + "/sell.html", { redirect: "manual" });
+  assert.strictEqual(sell.status, 301);
+  assert.match(sell.headers.get("location"), /sale\.html/);
+  const robots = await (await fetch(base + "/robots.txt")).text();
+  assert.match(robots, /Disallow: \/admin\//);
+  const sm = await (await fetch(base + "/sitemap.xml")).text();
+  assert.match(sm, /https:\/\/aqar\.example\/property\.html\?id=101/);
+  const adminApi = await fetch(base + "/api/admin/me");
+  assert.strictEqual(adminApi.headers.get("cache-control"), "no-store");
+});
+
+test("link previews escape listing data", async () => {
+  const r = await call("POST", "/api/admin/listings", {
+    deal: "sale", type: "apartment", title: '"><script>alert(1)</script>', gov: "damascus", place: "المزة",
+    price: 1000, size: 50, status: "published", images: ["villa-1"]
+  });
+  assert.strictEqual(r.status, 201);
+  const html = await (await fetch(base + "/property.html?id=" + r.data.listing.id)).text();
+  assert.ok(!html.includes("<script>alert(1)"), "no raw script tag");
+  assert.match(html, /<meta property="og:title" content="&quot;&gt;&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+  assert.match(html, /<meta property="og:image" content="https:\/\/aqar\.example\/assets\/img\/villa-1\.jpg">/);
+  await call("DELETE", "/api/admin/listings/" + r.data.listing.id);
+});
+
+test("thumbnails can only be stored next to an existing upload", async () => {
+  const jpg = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(200)]);
+  const full = await call("POST", "/api/admin/uploads", jpg, { "Content-Type": "image/jpeg" });
+  const id = full.data.path.replace(/^uploads\//, "").replace(/\.jpg$/, "");
+  assert.strictEqual((await call("POST", "/api/admin/uploads?thumb=" + id, jpg, { "Content-Type": "image/jpeg" })).status, 201);
+  assert.ok(fs.existsSync(path.join(tmp, "uploads", id + "-t.jpg")));
+  assert.strictEqual((await call("POST", "/api/admin/uploads?thumb=../../x", jpg, { "Content-Type": "image/jpeg" })).status, 400);
+  assert.strictEqual((await call("POST", "/api/admin/uploads?thumb=" + "a".repeat(24), jpg, { "Content-Type": "image/jpeg" })).status, 400);
+});
+
+test("a password changed on disk (create-admin) is used without restart", async () => {
+  const file = path.join(tmp, "data", "users.json");
+  const users = JSON.parse(fs.readFileSync(file, "utf8"));
+  users[0].password = hashPassword("another-strong-pass");
+  await new Promise((r) => setTimeout(r, 20));
+  fs.writeFileSync(file, JSON.stringify(users));
+  const saved = cookie;
+  assert.strictEqual((await call("POST", "/api/admin/login", { username: "admin", password: "correct-horse-battery" })).status, 401);
+  assert.strictEqual((await call("POST", "/api/admin/login", { username: "admin", password: "another-strong-pass" })).status, 200);
+  cookie = saved;
+});
+
+test("login lockout is per username, not for everyone on the same IP", async () => {
+  const saved = cookie; cookie = "";
+  for (let i = 0; i < 8; i++) await call("POST", "/api/admin/login", { username: "attacker-target", password: "x" });
+  assert.strictEqual((await call("POST", "/api/admin/login", { username: "attacker-target", password: "x" })).status, 429);
+  assert.strictEqual((await call("POST", "/api/admin/login", { username: "admin", password: "another-strong-pass" })).status, 200);
+  cookie = saved;
+});
+
 test("logout ends the session", async () => {
   await call("POST", "/api/admin/logout");
   assert.strictEqual((await call("GET", "/api/admin/me")).status, 401);

@@ -85,6 +85,19 @@
     if (!name) return "";
     return name.indexOf("/") !== -1 ? name : "assets/img/" + name + ".jpg";
   }
+  /* liten versjon (640 px) til kort og miniatyrer; faller tilbake til fullt bilde hvis den mangler */
+  function thumb(name) {
+    if (!name) return "";
+    if (name.indexOf("/") === -1) return "assets/img/thumbs/" + name + ".jpg";
+    var m = name.match(/^uploads\/([a-f0-9]{24})\.(jpg|png|webp)$/);
+    return m ? "uploads/" + m[1] + "-t.jpg" : name;
+  }
+  document.addEventListener("error", function (e) {
+    var t = e.target;
+    if (t && t.tagName === "IMG" && t.getAttribute("data-full") && t.getAttribute("src") !== t.getAttribute("data-full")) {
+      t.setAttribute("src", t.getAttribute("data-full"));
+    }
+  }, true);
   function findListing(id) {
     id = Number(id);
     for (var i = 0; i < window.LISTINGS.length; i++) if (window.LISTINGS[i].id === id) return window.LISTINGS[i];
@@ -128,7 +141,7 @@
     return (
       '<article class="card">' +
         '<a class="card-media" href="' + href + '" tabindex="-1" aria-hidden="true">' +
-          '<img loading="lazy" src="' + img(l.images[0]) + '" alt="" width="600" height="450">' +
+          '<img loading="lazy" src="' + thumb(l.images[0]) + '" data-full="' + img(l.images[0]) + '" alt="" width="600" height="450">' +
           (showDeal ? '<span class="badge">' + dealLabel(l.deal) + "</span>" : "") +
         "</a>" +
         '<div class="card-body">' +
@@ -257,6 +270,7 @@
     if (!host) return;
     var active = currentNavKey();
     host.innerHTML =
+      '<a class="skip-link" href="#" id="skip-link">تخطَّ إلى المحتوى</a>' +
       '<div class="topbar"><div class="container topbar-inner">' +
         '<p class="topbar-note">' + esc(C.slogan) + "</p>" +
         '<div class="topbar-links">' +
@@ -281,6 +295,13 @@
         "</div>" +
       "</div></header>";
 
+    host.querySelector("#skip-link").addEventListener("click", function (e) {
+      e.preventDefault();
+      var main = document.querySelector("main");
+      if (!main) return;
+      main.setAttribute("tabindex", "-1");
+      main.focus();
+    });
     var toggle = host.querySelector(".menu-toggle");
     var nav = host.querySelector("#main-nav");
     toggle.addEventListener("click", function () {
@@ -361,7 +382,7 @@
   window.SITE = {
     icon: icon, esc: esc, fmtNum: fmtNum, govById: govById, govName: govName, placeShort: placeShort,
     locationLabel: locationLabel, priceHTML: priceHTML, priceText: priceText, dealLabel: dealLabel,
-    roomsLabel: roomsLabel, img: img, findListing: findListing, agentById: agentById, initials: initials,
+    roomsLabel: roomsLabel, img: img, thumb: thumb, findListing: findListing, agentById: agentById, initials: initials,
     waLink: waLink, telLink: telLink,
     toast: toast, cardHTML: cardHTML, renderCards: renderCards, fillGovSelect: fillGovSelect,
     fillPlaceSelect: fillPlaceSelect, fillTypeSelect: fillTypeSelect, wireForm: wireForm

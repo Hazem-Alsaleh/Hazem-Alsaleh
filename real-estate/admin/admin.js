@@ -650,12 +650,12 @@
       renderImages();
     });
 
-    function resizeImage(file) {
+    function resizeImage(file, maxSize) {
       return new Promise(function (resolve, reject) {
         var url = URL.createObjectURL(file);
         var im = new Image();
         im.onload = function () {
-          var max = 1600, w = im.naturalWidth, h = im.naturalHeight, k = Math.min(1, max / Math.max(w, h));
+          var max = maxSize || 1600, w = im.naturalWidth, h = im.naturalHeight, k = Math.min(1, max / Math.max(w, h));
           var c = document.createElement("canvas");
           c.width = Math.round(w * k); c.height = Math.round(h * k);
           var ctx = c.getContext("2d");
@@ -677,7 +677,12 @@
       files.reduce(function (p, f) {
         return p.then(function () {
           return resizeImage(f).then(function (blob) { return api("POST", "/admin/uploads", blob); })
-            .then(function (d) { images.push(d.path); dirty = true; })
+            .then(function (d) {
+              images.push(d.path); dirty = true;
+              // liten versjon til boligkortene (raskere på trege nett); feiler den, brukes hele bildet
+              var id = d.path.replace(/^uploads\//, "").replace(/\.\w+$/, "");
+              return resizeImage(f, 640).then(function (small) { return api("POST", "/admin/uploads?thumb=" + id, small); }).catch(function () {});
+            })
             .catch(fail)
             .then(function () { uploading--; renderImages(); });
         });

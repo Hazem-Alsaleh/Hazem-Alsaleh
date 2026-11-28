@@ -698,3 +698,8 @@ bdi.amount, .num { font-variant-numeric: tabular-nums; }
 .gov-card span a { color: var(--muted); }
 .gov-card span a:hover { color: var(--brand-text); }
 .gov-card span { text-align: end; line-height: 1.6; }
+
+/* lenke for tastaturbrukere: vises bare når den får fokus */
+.skip-link { position: absolute; top: 0; inset-inline-start: 0; z-index: 200; padding: 0.6rem 1rem; background: var(--ink); color: var(--bg); transform: translateY(-120%); }
+.skip-link:focus { transform: none; }
+main:focus { outline: none; }

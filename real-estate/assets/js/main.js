@@ -290,7 +290,7 @@
           '<li class="nav-cta-mobile"><a class="btn btn-primary" href="sale.html#valuation">تقييم مجاني لعقارك</a></li>' +
         "</ul></nav>" +
         '<div class="header-actions">' +
-          '<a class="btn btn-ghost header-cta" href="sale.html#valuation">تقييم مجاني لعقارك</a>' +
+          '<a class="btn btn-primary header-cta" href="sale.html#valuation">تقييم مجاني لعقارك</a>' +
           '<button type="button" class="icon-btn menu-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="فتح القائمة">' + icon("menu") + "</button>" +
         "</div>" +
       "</div></header>";

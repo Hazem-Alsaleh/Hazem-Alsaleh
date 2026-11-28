@@ -29,6 +29,9 @@
   --band: #e76f51;
   --on-band: #ffffff;
   --num: #577877;
+  --top-bg: #b5492f;
+  --top-ink: #ffffff;
+  --top-hover: #fbe7e0;
   --overlay: rgba(10, 18, 16, 0.92);
   --shadow-sm: 0 1px 2px rgba(22, 38, 35, 0.06);
   --shadow: 0 18px 40px rgba(22, 38, 35, 0.10);
@@ -68,6 +71,9 @@
     --band: #c4553a;
     --on-band: #ffffff;
     --num: #86a9a6;
+    --top-bg: #8f3a26;
+    --top-ink: #ffffff;
+    --top-hover: #fbe7e0;
     --overlay: rgba(0, 0, 0, 0.92);
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
     --shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
@@ -99,6 +105,9 @@
   --band: #c4553a;
   --on-band: #ffffff;
   --num: #86a9a6;
+  --top-bg: #8f3a26;
+  --top-ink: #ffffff;
+  --top-hover: #fbe7e0;
   --overlay: rgba(0, 0, 0, 0.92);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
@@ -186,14 +195,15 @@ bdi.amount, .num { font-variant-numeric: tabular-nums; }
 
 /* ---------- topplinje og meny ---------- */
 #site-header, #site-footer { display: contents; }
-.topbar { background: var(--surface); font-size: 0.84rem; color: var(--muted); }
+.topbar { background: var(--top-bg); font-size: 0.84rem; color: var(--top-ink); }
 .topbar-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 38px; flex-wrap: wrap; }
 .topbar-links { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
-.topbar-links a, .topbar-links span { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--muted); }
-.topbar-links a:hover { color: var(--ink); }
+.topbar-links a, .topbar-links span { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--top-ink); }
+.topbar-links a:hover { color: var(--top-hover); }
+.topbar a:focus-visible { outline-color: var(--top-ink); }
 .site-header {
   position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50;
-  background: var(--bg); border-bottom: 1px solid var(--line);
+  background: var(--card); border-bottom: 1px solid var(--line);
 }
 .header-inner { display: flex; align-items: center; gap: 2rem; min-height: 78px; }
 .brand { display: inline-flex; align-items: center; gap: 0.75rem; color: var(--ink); }
@@ -206,7 +216,7 @@ bdi.amount, .num { font-variant-numeric: tabular-nums; }
 .main-nav ul { display: flex; align-items: center; gap: 1.9rem; }
 .main-nav a { display: block; padding: 0.4rem 0; color: var(--ink); font-weight: 500; border-bottom: 2px solid transparent; }
 .main-nav a:hover { text-decoration: none; border-bottom-color: var(--line-strong); }
-.main-nav a[aria-current="page"] { border-bottom-color: var(--ink); }
+.main-nav a[aria-current="page"] { border-bottom-color: var(--brand); }
 .nav-cta-mobile { display: none; }
 .header-actions { display: flex; align-items: center; gap: 0.6rem; }
 .header-cta { min-height: 44px; padding-inline: 1.1rem; }

@@ -107,7 +107,7 @@
 
 /* ---------- grunnlag ---------- */
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 96px; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; animation: none !important; } }
 body {
   margin: 0;
@@ -439,6 +439,34 @@ bdi.amount, .num { font-variant-numeric: tabular-nums; }
 .faq summary::after { content: "+"; font-size: 1.5rem; line-height: 1; color: var(--muted); font-weight: 300; }
 .faq details[open] summary::after { content: "–"; }
 .faq details > div { padding-bottom: 1.3rem; color: var(--ink-2); display: grid; gap: 0.6rem; max-width: 68ch; }
+
+/* Rights and duties */
+.rights-wrap { border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); overflow: hidden; }
+.rights-table { width: 100%; border-collapse: collapse; }
+.rights-table th, .rights-table td { padding: 1.15rem 1.5rem; text-align: start; vertical-align: top; }
+.rights-table thead th { background: var(--surface); color: var(--muted); font-size: 0.88rem; font-weight: 600; border-bottom: 1px solid var(--line); }
+.rights-table tbody tr + tr > * { border-top: 1px solid var(--line); }
+.rights-table tbody th { width: 9rem; font-size: 1.1rem; font-weight: 700; color: var(--ink); }
+.rights-table td { color: var(--ink-2); line-height: 1.85; }
+.rights-table thead th:first-child { width: 9rem; }
+.rights-notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+.rights-note { display: grid; gap: 0.6rem; align-content: start; padding: 1.5rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
+.rights-note h3 { font-size: 1.1rem; font-weight: 600; }
+.rights-note p { color: var(--ink-2); }
+.fee-figure { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.4rem 0.8rem; }
+.fee-figure strong { font-size: 2.4rem; line-height: 1; font-weight: 700; color: var(--num); }
+.fee-figure span { color: var(--muted); font-size: 0.95rem; }
+@media (max-width: 720px) {
+  .rights-notes { grid-template-columns: 1fr; }
+  .rights-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .rights-table, .rights-table tbody, .rights-table tr, .rights-table th, .rights-table td { display: block; width: auto; }
+  .rights-table tbody tr { padding: 1.1rem 1.25rem; }
+  .rights-table tbody tr + tr { border-top: 1px solid var(--line); }
+  .rights-table tbody tr + tr > * { border-top: 0; }
+  .rights-table tbody th, .rights-table td { padding: 0; }
+  .rights-table td { margin-top: 0.75rem; }
+  .rights-table td::before { content: attr(data-label); display: block; color: var(--muted); font-size: 0.85rem; font-weight: 600; }
+}
 
 /* ---------- avsluttende oppfordring ---------- */
 .closing { background: var(--band); color: var(--on-band); }
